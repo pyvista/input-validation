@@ -79,12 +79,12 @@ jobs:
         pattern: coverage-*
         path: coverage-data
         merge-multiple: true
-    - run: uvx --from 'coverage[toml]>=7.10' coverage combine coverage-data
-    - run: uvx --from 'coverage[toml]>=7.10' coverage xml
-    - run: uvx --from 'coverage[toml]>=7.10' coverage report --fail-under=99
+    - run: uv run --only-group coverage coverage combine coverage-data
+    - run: uv run --only-group coverage coverage xml
+    - run: uv run --only-group coverage coverage report --fail-under=99
     - name: Patch coverage
       if: ${{ !cancelled() && github.event_name == 'pull_request' }}
-      run: uvx diff-cover coverage.xml --compare-branch "origin/$GITHUB_BASE_REF" --fail-under 95 --format markdown:diff-cover.md
+      run: uv run --only-group coverage diff-cover coverage.xml --compare-branch "origin/$GITHUB_BASE_REF" --fail-under 95 --format markdown:diff-cover.md
     - if: ${{ !cancelled() && github.event_name == 'pull_request' }}
       run: cat diff-cover.md >> "$GITHUB_STEP_SUMMARY" || true
     - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5   # v7.1.1
