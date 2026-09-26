@@ -142,6 +142,40 @@ _ToTupleStr = str | _NestedTupleStr
 _ToAnyList = _ToList | _ToListStr
 _ToAnyTuple = _ToTuple | _ToTupleStr
 
+# Array-likes of one kind, matching optype's ToFloat1D and friends; a float admits int and bool.
+_PyT = TypeVar('_PyT', default=float)
+_DTypeT = TypeVar('_DTypeT', bound=_AnyDType, default=_AnyDType)
+_Item = Union[_PyT, _DTypeT, npt.NDArray[_DTypeT]]
+# _PyT comes first in each alias, since a generic alias takes its parameters in that order.
+_VectorLikeOf = Union[Sequence[Union[_PyT, _DTypeT]], _Array1D[_DTypeT]]
+_MatrixLikeOf = Union[Sequence[_VectorLikeOf[_PyT, _DTypeT]], _Array2D[_DTypeT]]
+# Sequences nested up to four deep, each level holding items or shallower sequences.
+_Nested1 = Sequence[_Item[_PyT, _DTypeT]]
+_Nested2 = Sequence[Union[_Item[_PyT, _DTypeT], _Nested1[_PyT, _DTypeT]]]
+_Nested3 = Sequence[Union[_Item[_PyT, _DTypeT], _Nested1[_PyT, _DTypeT], _Nested2[_PyT, _DTypeT]]]
+_Nested4 = Sequence[
+    Union[
+        _Item[_PyT, _DTypeT],
+        _Nested1[_PyT, _DTypeT],
+        _Nested2[_PyT, _DTypeT],
+        _Nested3[_PyT, _DTypeT],
+    ]
+]
+_ArrayLikeOf = Union[_Nested4[_PyT, _DTypeT], npt.NDArray[_DTypeT]]
+
+_FloatDType = Union[np.floating, np.integer, np.bool_]
+_IntDType = Union[np.integer, np.bool_]
+
+VectorLikeFloat = _VectorLikeOf[float, _FloatDType]
+VectorLikeInt = _VectorLikeOf[int, _IntDType]
+VectorLikeBool = _VectorLikeOf[bool, np.bool_]
+MatrixLikeFloat = _MatrixLikeOf[float, _FloatDType]
+MatrixLikeInt = _MatrixLikeOf[int, _IntDType]
+MatrixLikeBool = _MatrixLikeOf[bool, np.bool_]
+ArrayLikeFloat = _ArrayLikeOf[float, _FloatDType]
+ArrayLikeInt = _ArrayLikeOf[int, _IntDType]
+ArrayLikeBool = _ArrayLikeOf[bool, np.bool_]
+
 # The same shapes once text is admitted: any array the package handles, scalars included.
 _AnyItem = Union[float, str, bytes, _AnyDType, npt.NDArray[_AnyDType]]
 # Sequences nested up to four deep, each level holding items or shallower sequences.
