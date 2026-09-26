@@ -2,24 +2,18 @@
 
 from __future__ import annotations
 
-from ._aliases import ArrayLike as ArrayLike
 from ._aliases import ArrayLikeBool as ArrayLikeBool
 from ._aliases import ArrayLikeFloat as ArrayLikeFloat
 from ._aliases import ArrayLikeInt as ArrayLikeInt
-from ._aliases import MatrixLike as MatrixLike
 from ._aliases import MatrixLikeBool as MatrixLikeBool
 from ._aliases import MatrixLikeFloat as MatrixLikeFloat
 from ._aliases import MatrixLikeInt as MatrixLikeInt
 from ._aliases import RotationLike as RotationLike
 from ._aliases import TransformLike as TransformLike
-from ._aliases import VectorLike as VectorLike
 from ._aliases import VectorLikeBool as VectorLikeBool
 from ._aliases import VectorLikeFloat as VectorLikeFloat
 from ._aliases import VectorLikeInt as VectorLikeInt
 from ._aliases import _ArrayLikeOrScalar as _ArrayLikeOrScalar
-from ._array_like import Number as Number
-from ._array_like import NumberType as NumberType
-from ._array_like import NumpyArray as NumpyArray
 from ._array_like import _AnyArrayLike as _AnyArrayLike
 from ._array_like import _AnyArrayLikeOrScalar as _AnyArrayLikeOrScalar
 from ._array_like import _AnyDType as _AnyDType
@@ -48,7 +42,6 @@ from ._array_like import _NestedTupleFloat as _NestedTupleFloat
 from ._array_like import _NestedTupleInt as _NestedTupleInt
 from ._array_like import _Real as _Real
 from ._array_like import _Scalar as _Scalar
-from ._array_like import _ScalarT as _ScalarT
 from ._array_like import _Text as _Text
 from ._array_like import _ToAnyList as _ToAnyList
 from ._array_like import _ToAnyTuple as _ToAnyTuple

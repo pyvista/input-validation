@@ -126,4 +126,4 @@ def rejected() -> None:
     matrix_float(VECTOR)  # type: ignore[arg-type]
     matrix_int([[1.5]])  # type: ignore[list-item]
     array_int(FLOATS)  # type: ignore[arg-type]
-    array_bool([[1]])  # type: ignore[arg-type]
+    array_bool([[1]])  # type: ignore[list-item]

@@ -1506,22 +1506,6 @@ def test_accelerate_reads_the_environment_value(value, expected):
     assert disabled(value) is expected
 
 
-@pytest.mark.parametrize('scalar_type', [float, int, bool])
-def test_typing_aliases_are_subscriptable(scalar_type):
-    from pyvista_validation import _typing
-
-    aliases = (
-        _typing.ArrayLike,
-        _typing.VectorLike,
-        _typing.MatrixLike,
-        _typing._ArrayLikeOrScalar,
-    )
-    for alias in aliases:
-        assert alias[scalar_type] != alias
-    assert _typing.NumberType.__default__ is float
-    assert _typing.NumpyArray[np.float32] != _typing.NumpyArray
-
-
 @pytest.mark.parametrize('name', ['Array0D', 'Array1D', 'Array2D', 'Array3D'])
 def test_rank_aliases_are_subscriptable(name):
     """Each rank alias takes a dtype at runtime."""

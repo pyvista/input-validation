@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING
 from typing import cast
 from typing import overload
@@ -23,7 +24,6 @@ if TYPE_CHECKING:
     from pyvista_validation._typing import _NestedInt
     from pyvista_validation._typing import _NestedStr
     from pyvista_validation._typing import _Scalar
-    from pyvista_validation._typing import _ScalarT
     from pyvista_validation._typing import _ToAnyList
     from pyvista_validation._typing import _ToAnyTuple
     from pyvista_validation._typing import _ToList
@@ -36,6 +36,14 @@ if TYPE_CHECKING:
     from pyvista_validation._typing import _ToTupleFloat
     from pyvista_validation._typing import _ToTupleInt
     from pyvista_validation._typing import _ToTupleStr
+
+if sys.version_info >= (3, 13):
+    from typing import TypeVar
+else:
+    from typing_extensions import TypeVar
+
+# For overload signatures that return the same dtype they are given; bare, it is any of them.
+_ScalarT = TypeVar('_ScalarT', bound='_Scalar', default='_Scalar')
 
 
 # Overloads follow NumPy's dtype inference: NumPy inputs keep their dtype, Python bools, ints
@@ -66,7 +74,7 @@ def _cast_to_list(arr: _AnyArrayLikeOrScalar, /) -> _ToAnyList:
 
     Parameters
     ----------
-    arr : float | ArrayLike
+    arr : float | ArrayLikeFloat
         Array to cast.
 
     Returns
@@ -99,7 +107,7 @@ def _cast_to_tuple(arr: _AnyArrayLikeOrScalar, /) -> _ToAnyTuple:
 
     Parameters
     ----------
-    arr : float | ArrayLike
+    arr : float | ArrayLikeFloat
         Array to cast.
 
     Returns
@@ -159,7 +167,7 @@ def _cast_to_numpy(
 
     Parameters
     ----------
-    arr : float | ArrayLike
+    arr : float | ArrayLikeFloat
         Array to cast.
 
     as_any : bool, default: True

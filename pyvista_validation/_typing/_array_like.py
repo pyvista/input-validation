@@ -1,12 +1,4 @@
-"""Array-like type definitions.
-
-The array-like aliases are generic over ``NumberType``, the Python scalar type of a
-sequence's items, which defaults to ``float`` so that ``ArrayLike`` and
-``ArrayLike[float]`` are the same type. NumPy arrays of any numeric dtype are
-accepted whatever the parameter, since a dtype is not a Python scalar type.
-``np.float64`` items are accepted through their ``float`` subclass, and ``int``
-and ``bool`` items through numeric promotion.
-"""
+"""Array-like type definitions."""
 
 from __future__ import annotations
 
@@ -65,11 +57,6 @@ else:
     _DTypeLike = npt.DTypeLike
     _EmptyList = list
 
-# For overload signatures that return the same dtype they are given; used bare, it is any
-# of them.
-_ScalarT = TypeVar('_ScalarT', bound=_Scalar, default=_Scalar)
-NumpyArray = npt.NDArray[_ScalarT]
-
 # Arrays of a known rank, for outputs whose rank the validation guarantees.
 # Every scalar type an array can hold, abstract NumPy families included.
 _AnyDType = Union['np.floating[Any]', 'np.integer[Any]', np.bool_, _Text]
@@ -78,11 +65,6 @@ _Array0D = np.ndarray[tuple[()], np.dtype[_AnyScalarT]]
 _Array1D = np.ndarray[tuple[int], np.dtype[_AnyScalarT]]
 _Array2D = np.ndarray[tuple[int, int], np.dtype[_AnyScalarT]]
 _Array3D = np.ndarray[tuple[int, int, int], np.dtype[_AnyScalarT]]
-
-# The Python scalar type of a sequence's items. Its default makes a bare ``ArrayLike`` mean
-# ``ArrayLike[float]``, which accepts ints and bools as well through numeric promotion.
-NumberType = TypeVar('NumberType', bound=float, default=float)
-Number = float
 
 _NestedBool = (
     Sequence[bool]
@@ -160,69 +142,14 @@ _ToTupleStr = str | _NestedTupleStr
 _ToAnyList = _ToList | _ToListStr
 _ToAnyTuple = _ToTuple | _ToTupleStr
 
-# Sequences may mix Python and NumPy scalars, or hold arrays as their innermost items.
-# Spelled with ``Union`` because a ``types.UnionType`` cannot be subscripted on Python 3.10.
-_ArrayLike1D = Union[
-    npt.NDArray[_Scalar],
-    Sequence[Union[NumberType, _Scalar]],
-    Sequence[npt.NDArray[_Scalar]],
-]
-_ArrayLike2D = Union[
-    npt.NDArray[_Scalar],
-    Sequence[Sequence[Union[NumberType, _Scalar]]],
-    Sequence[Sequence[npt.NDArray[_Scalar]]],
-]
-_ArrayLike3D = Union[
-    npt.NDArray[_Scalar],
-    Sequence[Sequence[Sequence[Union[NumberType, _Scalar]]]],
-    Sequence[Sequence[Sequence[npt.NDArray[_Scalar]]]],
-]
-_ArrayLike4D = Union[
-    npt.NDArray[_Scalar],
-    Sequence[Sequence[Sequence[Sequence[Union[NumberType, _Scalar]]]]],
-    Sequence[Sequence[Sequence[Sequence[npt.NDArray[_Scalar]]]]],
-]
-_ArrayLike = Union[
-    _ArrayLike1D[NumberType],
-    _ArrayLike2D[NumberType],
-    _ArrayLike3D[NumberType],
-    _ArrayLike4D[NumberType],
-]
-
 # The same shapes once text is admitted: any array the package handles, scalars included.
-_AnyItem = Union[float, str, bytes, _AnyScalar]
-_AnyArrayLike1D = Union[
-    npt.NDArray[_AnyScalar], Sequence[_AnyItem], Sequence[npt.NDArray[_AnyScalar]]
-]
-_AnyArrayLike2D = Union[
-    npt.NDArray[_AnyScalar],
-    Sequence[Sequence[_AnyItem]],
-    Sequence[Sequence[npt.NDArray[_AnyScalar]]],
-]
-_AnyArrayLike3D = Union[
-    npt.NDArray[_AnyScalar],
-    Sequence[Sequence[Sequence[_AnyItem]]],
-    Sequence[Sequence[Sequence[npt.NDArray[_AnyScalar]]]],
-]
-_AnyArrayLike4D = Union[
-    npt.NDArray[_AnyScalar],
-    Sequence[Sequence[Sequence[Sequence[_AnyItem]]]],
-    Sequence[Sequence[Sequence[Sequence[npt.NDArray[_AnyScalar]]]]],
-]
-_AnyArrayLike = Union[_AnyArrayLike1D, _AnyArrayLike2D, _AnyArrayLike3D, _AnyArrayLike4D]
-_AnyArrayLikeOrScalar = Union[float, str, bytes, _AnyScalar, _AnyArrayLike]
+_AnyItem = Union[float, str, bytes, _AnyDType, npt.NDArray[_AnyDType]]
+# Sequences nested up to four deep, each level holding items or shallower sequences.
+_AnyNested1 = Sequence[_AnyItem]
+_AnyNested2 = Sequence[Union[_AnyItem, _AnyNested1]]
+_AnyNested3 = Sequence[Union[_AnyItem, _AnyNested1, _AnyNested2]]
+_AnyNested = Sequence[Union[_AnyItem, _AnyNested1, _AnyNested2, _AnyNested3]]
+_AnyArrayLike = Union[npt.NDArray[_AnyDType], _AnyNested]
+_AnyArrayLikeOrScalar = Union[float, str, bytes, _AnyDType, _AnyArrayLike]
 # The same without NumPy arrays: scalars and nested sequences.
-_AnyNonArrayLikeOrScalar = Union[
-    float,
-    str,
-    bytes,
-    _AnyScalar,
-    Sequence[_AnyItem],
-    Sequence[npt.NDArray[_AnyScalar]],
-    Sequence[Sequence[_AnyItem]],
-    Sequence[Sequence[npt.NDArray[_AnyScalar]]],
-    Sequence[Sequence[Sequence[_AnyItem]]],
-    Sequence[Sequence[Sequence[npt.NDArray[_AnyScalar]]]],
-    Sequence[Sequence[Sequence[Sequence[_AnyItem]]]],
-    Sequence[Sequence[Sequence[Sequence[npt.NDArray[_AnyScalar]]]]],
-]
+_AnyNonArrayLikeOrScalar = Union[float, str, bytes, _AnyDType, _AnyNested]
