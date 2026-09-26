@@ -11,6 +11,7 @@ import types
 from typing import NamedTuple
 from typing import Optional
 from typing import Union
+from typing import get_args
 
 import numpy as np
 import pytest
@@ -1527,7 +1528,9 @@ def test_rank_aliases_are_subscriptable(name):
     from pyvista_validation import typing
 
     alias = getattr(typing, name)
-    assert alias[np.float32] != alias
+    shape, dtype = get_args(alias[np.float32])
+    assert (0 if shape == tuple[()] else len(get_args(shape))) == int(name[5])
+    assert dtype == np.dtype[np.float32]
 
 
 @pytest.mark.parametrize(
