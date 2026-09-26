@@ -212,3 +212,18 @@ _AnyArrayLike4D = Union[
 ]
 _AnyArrayLike = Union[_AnyArrayLike1D, _AnyArrayLike2D, _AnyArrayLike3D, _AnyArrayLike4D]
 _AnyArrayLikeOrScalar = Union[float, str, bytes, _AnyScalar, _AnyArrayLike]
+# The same without NumPy arrays: scalars and nested sequences.
+_AnyNonArrayLikeOrScalar = Union[
+    float,
+    str,
+    bytes,
+    _AnyScalar,
+    Sequence[_AnyItem],
+    Sequence[npt.NDArray[_AnyScalar]],
+    Sequence[Sequence[_AnyItem]],
+    Sequence[Sequence[npt.NDArray[_AnyScalar]]],
+    Sequence[Sequence[Sequence[_AnyItem]]],
+    Sequence[Sequence[Sequence[npt.NDArray[_AnyScalar]]]],
+    Sequence[Sequence[Sequence[Sequence[_AnyItem]]]],
+    Sequence[Sequence[Sequence[Sequence[npt.NDArray[_AnyScalar]]]]],
+]

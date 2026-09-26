@@ -45,6 +45,7 @@ if TYPE_CHECKING:
 
     from pyvista_validation._typing import VectorLike
     from pyvista_validation._typing import _AnyArrayLikeOrScalar
+    from pyvista_validation._typing import _AnyNonArrayLikeOrScalar
     from pyvista_validation._typing import _AnyScalarT
     from pyvista_validation._typing import _Array0D
     from pyvista_validation._typing import _Array1D
@@ -67,6 +68,9 @@ _ClassInfo = type[object] | tuple[type[object], ...] | UnionType
 _ArrayT = TypeVar('_ArrayT', bound='_ArrayLikeOrScalar', default='_ArrayLikeOrScalar')
 # For the checks that do not depend on the values being numbers.
 _AnyArrayT = TypeVar('_AnyArrayT', bound='_AnyArrayLikeOrScalar', default='_AnyArrayLikeOrScalar')
+_NonArrayT = TypeVar(
+    '_NonArrayT', bound='_AnyNonArrayLikeOrScalar', default='_AnyNonArrayLikeOrScalar'
+)
 _DTypeOrArrayT = TypeVar(
     '_DTypeOrArrayT',
     bound='_DTypeLike | _AnyArrayLikeOrScalar',
@@ -756,7 +760,9 @@ def check_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], /, ndi
 @overload
 def check_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], /, ndim: Literal[3], *, name: str = ...) -> _Array3D[_AnyScalarT]: ...
 @overload
-def check_ndim(array: _AnyArrayT, /, ndim: int | VectorLike, *, name: str = ...) -> _AnyArrayT: ...
+def check_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], /, ndim: int | VectorLike, *, name: str = ...) -> npt.NDArray[_AnyScalarT]: ...
+@overload
+def check_ndim(array: _NonArrayT, /, ndim: int | VectorLike, *, name: str = ...) -> _NonArrayT: ...
 # fmt: on
 def check_ndim(
     array: _AnyArrayT,
