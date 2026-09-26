@@ -43,7 +43,6 @@ from pyvista_validation._typing import _Scalar
 from pyvista_validation.check import _dtype_of
 from pyvista_validation.check import _is_floating
 from pyvista_validation.check import _is_integer
-from pyvista_validation.check import _is_ndim
 from pyvista_validation.check import _is_real
 from pyvista_validation.check import _issubdtype
 from pyvista_validation.check import _Shape
@@ -134,7 +133,7 @@ assert_types(check_ndim(CUBE, 3), _Array3D[np.float64])
 assert_types(check_ndim(TEXT, 1), _Array1D[np.str_])
 assert_types(check_ndim(ANY_FLOATS, 1), _Array1D[Any])
 assert_types(check_ndim(np.asarray([1.0]), 1), _Array1D[np.float64])
-# A union of dtypes is narrowed to the rank over every scalar type; _is_ndim keeps the union.
+# A union of dtypes is narrowed to the rank over every scalar type; is_array_1d keeps the union.
 assert_types(check_ndim(F32_OR_TEXT, 1), _Array1D[_AnyDType])
 # Abstract NumPy dtypes, as the array-like aliases spell them, keep their type.
 assert_types(check_ndim(ANY_INTEGERS, 1), _Array1D[np.integer[Any]])
@@ -206,17 +205,6 @@ assert_types(ANY_BOOLS if _is_real(ANY_BOOLS) else None, npt.NDArray[_Real] | No
 assert_types(F32_OR_TEXT if _is_real(F32_OR_TEXT) else None, npt.NDArray[np.float32] | None)
 assert_types(_is_floating(ONES), bool)
 
-# The rank predicate narrows the array it returns True for, keeping its dtype.
-assert_types(SCALAR if _is_ndim(SCALAR, 0) else None, _Array0D[np.float64] | None)
-assert_types(ONES if _is_ndim(ONES, 1) else None, _Array1D[np.float64] | None)
-assert_types(MATRIX if _is_ndim(MATRIX, 2) else None, _Array2D[np.int64] | None)
-assert_types(CUBE if _is_ndim(CUBE, 3) else None, _Array3D[np.float64] | None)
-assert_types(ANY_FLOATS if _is_ndim(ANY_FLOATS, 1) else None, _Array1D[Any] | None)
-assert_types(
-    F32_OR_TEXT if _is_ndim(F32_OR_TEXT, 1) else None,
-    _Array1D[np.float32] | _Array1D[np.str_] | None,
-)
-assert_types(_is_ndim(ONES, 1), bool)
 
 SKIP_RUNTIME = {
     'check_real(TEXT)': 'raises TypeError: text is not real, only the passthrough is typed',

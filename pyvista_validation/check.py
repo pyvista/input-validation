@@ -47,7 +47,7 @@ if TYPE_CHECKING:
     from pyvista_validation._typing import _AnyArrayLikeOrScalar
     from pyvista_validation._typing import _AnyDType
     from pyvista_validation._typing import _AnyNonArrayLikeOrScalar
-    from pyvista_validation._typing import _AnyScalarT
+    from pyvista_validation._typing import _AnyScalar
     from pyvista_validation._typing import _Array0D
     from pyvista_validation._typing import _Array1D
     from pyvista_validation._typing import _Array2D
@@ -69,6 +69,8 @@ _ClassInfo = type[object] | tuple[type[object], ...] | UnionType
 _ArrayT = TypeVar('_ArrayT', bound='_ArrayLikeOrScalar', default='_ArrayLikeOrScalar')
 # For the checks that do not depend on the values being numbers.
 _AnyArrayT = TypeVar('_AnyArrayT', bound='_AnyArrayLikeOrScalar', default='_AnyArrayLikeOrScalar')
+# The scalar types the rank overloads keep, abstract NumPy families included.
+_AnyScalarT = TypeVar('_AnyScalarT', bound='_AnyDType', default='_AnyScalar')
 _NonArrayT = TypeVar(
     '_NonArrayT', bound='_AnyNonArrayLikeOrScalar', default='_AnyNonArrayLikeOrScalar'
 )
@@ -1482,23 +1484,6 @@ def _is_integer(array: npt.NDArray[np.generic[object]], /) -> TypeIs[npt.NDArray
 def _is_real(array: npt.NDArray[np.generic[object]], /) -> TypeIs[npt.NDArray[_Real]]:
     """Return whether an array has an integer, float64, float32 or float16 dtype."""
     return _is_integer(array) or _is_floating(array)
-
-
-# fmt: off
-@overload
-def _is_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], ndim: Literal[0], /) -> TypeIs[_Array0D[_AnyScalarT]]: ...
-@overload
-def _is_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], ndim: Literal[1], /) -> TypeIs[_Array1D[_AnyScalarT]]: ...
-@overload
-def _is_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], ndim: Literal[2], /) -> TypeIs[_Array2D[_AnyScalarT]]: ...
-@overload
-def _is_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], ndim: Literal[3], /) -> TypeIs[_Array3D[_AnyScalarT]]: ...
-@overload
-def _is_ndim(array: npt.NDArray[_AnyScalarT], ndim: int, /) -> bool: ...
-# fmt: on
-def _is_ndim(array: npt.NDArray[_AnyScalarT], ndim: int, /) -> bool:
-    """Return whether an array has the given number of dimensions."""
-    return array.ndim == ndim
 
 
 def _shape_of(array: _AnyArrayLikeOrScalar, /) -> tuple[int, ...]:
