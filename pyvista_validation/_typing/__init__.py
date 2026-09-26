@@ -3,10 +3,19 @@
 from __future__ import annotations
 
 from ._aliases import ArrayLike as ArrayLike
+from ._aliases import ArrayLikeBool as ArrayLikeBool
+from ._aliases import ArrayLikeFloat as ArrayLikeFloat
+from ._aliases import ArrayLikeInt as ArrayLikeInt
 from ._aliases import MatrixLike as MatrixLike
+from ._aliases import MatrixLikeBool as MatrixLikeBool
+from ._aliases import MatrixLikeFloat as MatrixLikeFloat
+from ._aliases import MatrixLikeInt as MatrixLikeInt
 from ._aliases import RotationLike as RotationLike
 from ._aliases import TransformLike as TransformLike
 from ._aliases import VectorLike as VectorLike
+from ._aliases import VectorLikeBool as VectorLikeBool
+from ._aliases import VectorLikeFloat as VectorLikeFloat
+from ._aliases import VectorLikeInt as VectorLikeInt
 from ._aliases import _ArrayLikeOrScalar as _ArrayLikeOrScalar
 from ._array_like import Number as Number
 from ._array_like import NumberType as NumberType
