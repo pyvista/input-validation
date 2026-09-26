@@ -63,7 +63,7 @@ jobs:
         include-hidden-files: true
 
   coverage:
-      # Combine the test matrix's coverage, gate the total and the lines a pull request changes, then upload.
+      # Combine the matrix's coverage and gate the total and the patch.
     needs: test
     runs-on: ubuntu-latest
     steps:
