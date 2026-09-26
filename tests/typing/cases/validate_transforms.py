@@ -83,3 +83,9 @@ assert_types(
     validate_transform4x4([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
     _Array2D[np.float64],
 )
+
+
+# Never called; the ignore is reported as unused if the checker stops rejecting a stack.
+def stacked_rotation() -> None:
+    """Pass a stack of rotations to ``validate_rotation``."""
+    validate_rotation(Rotation.random(2))  # type: ignore[arg-type]
