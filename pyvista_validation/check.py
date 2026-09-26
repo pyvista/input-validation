@@ -43,7 +43,8 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import TypeIs
 
-    from pyvista_validation._typing import VectorLike
+    from pyvista_validation._typing import VectorLikeFloat
+    from pyvista_validation._typing import VectorLikeInt
     from pyvista_validation._typing import _AnyArrayLikeOrScalar
     from pyvista_validation._typing import _AnyDType
     from pyvista_validation._typing import _AnyNonArrayLikeOrScalar
@@ -102,7 +103,7 @@ def check_subdtype(
 
     Parameters
     ----------
-    input_obj : float | ArrayLike | DTypeLike
+    input_obj : float | ArrayLikeFloat | DTypeLike
         ``dtype`` object (or object coercible to one) or an array-like object.
         If array-like, the ``dtype`` of the array is used.
 
@@ -176,7 +177,7 @@ def check_real(array: _AnyArrayT, /, *, name: str = 'Array') -> _AnyArrayT:
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
     name : str, default: "Array"
@@ -234,7 +235,7 @@ def check_sorted(
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
     ascending : bool, default: True
@@ -278,7 +279,9 @@ def check_sorted(
     [1, 2, 3]
 
     """
-    array_ = array if isinstance(array, np.ndarray) else _cast_to_numpy(array)
+    array_: npt.NDArray[_AnyDType] = (
+        array if isinstance(array, np.ndarray) else _cast_to_numpy(array)
+    )
     ndim = array_.ndim
     if ndim == 0:
         # Scalars are always sorted
@@ -332,7 +335,7 @@ def check_finite(array: _ArrayT, /, *, name: str = 'Array') -> _ArrayT:
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
     name : str, default: "Array"
@@ -379,7 +382,7 @@ def check_integer(
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
     strict : bool, default: False
@@ -431,7 +434,7 @@ def check_nonnegative(array: _ArrayT, /, *, name: str = 'Array') -> _ArrayT:
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
     name : str, default: "Array"
@@ -484,7 +487,7 @@ def check_greater_than(
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
     value : float
@@ -546,7 +549,7 @@ def check_less_than(
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
     value : float
@@ -600,7 +603,7 @@ def check_less_than(
 def check_range(
     array: _ArrayT,
     /,
-    rng: VectorLike,
+    rng: VectorLikeFloat,
     *,
     strict_lower: bool = False,
     strict_upper: bool = False,
@@ -610,10 +613,10 @@ def check_range(
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
-    rng : VectorLike, optional
+    rng : VectorLikeFloat, optional
         Vector with two elements ``[min, max]`` specifying the minimum
         and maximum data values allowed, respectively. By default, the
         range endpoints are inclusive, that is, values must be >= min
@@ -677,7 +680,7 @@ def check_shape(
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
     shape : ShapeLike | list[ShapeLike]
@@ -761,14 +764,14 @@ def check_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], /, ndi
 @overload
 def check_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], /, ndim: Literal[3], *, name: str = ...) -> _Array3D[_AnyScalarT]: ...
 @overload
-def check_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], /, ndim: int | VectorLike, *, name: str = ...) -> npt.NDArray[_AnyScalarT]: ...
+def check_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], /, ndim: int | VectorLikeInt, *, name: str = ...) -> npt.NDArray[_AnyScalarT]: ...
 @overload
-def check_ndim(array: _NonArrayT, /, ndim: int | VectorLike, *, name: str = ...) -> _NonArrayT: ...
+def check_ndim(array: _NonArrayT, /, ndim: int | VectorLikeInt, *, name: str = ...) -> _NonArrayT: ...
 # fmt: on
 def check_ndim(
     array: npt.NDArray[_AnyDType] | _AnyNonArrayLikeOrScalar,
     /,
-    ndim: int | VectorLike,
+    ndim: int | VectorLikeInt,
     *,
     name: str = 'Array',
 ) -> npt.NDArray[_AnyDType] | _AnyNonArrayLikeOrScalar:
@@ -779,7 +782,7 @@ def check_ndim(
 
     Parameters
     ----------
-    array : float | ArrayLike
+    array : float | ArrayLikeFloat
         Number or array to check.
 
     ndim : int | Sequence[int], optional
@@ -822,8 +825,7 @@ def check_ndim(
 
     """
     ndim_ = np.atleast_1d(_cast_to_numpy(ndim))
-    # At runtime an array's dtype is always one of the concrete scalar types.
-    array_ndim = _cast_to_numpy(cast('_AnyArrayLikeOrScalar', array)).ndim
+    array_ndim = _cast_to_numpy(array).ndim
     if array_ndim not in ndim_:
         check_ndim(ndim, [0, 1], name='ndim')
         check_integer(ndim_, strict=True, name='ndim')
@@ -1306,7 +1308,7 @@ def check_contains(
 def check_length(
     sized_input: _SizedT,
     /,
-    exact_length: int | VectorLike | None = None,
+    exact_length: int | VectorLikeInt | None = None,
     *,
     min_length: int | None = None,
     max_length: int | None = None,
@@ -1328,7 +1330,7 @@ def check_length(
     sized_input : float | Sized
         Number or array to check.
 
-    exact_length : int | VectorLike, optional
+    exact_length : int | VectorLikeInt, optional
         Check if the array has the given length. If multiple
         numbers are given, the array's length must match one of the
         numbers.

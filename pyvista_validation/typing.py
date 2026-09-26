@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
-from ._typing import ArrayLike
-from ._typing import MatrixLike
+from ._typing import ArrayLikeBool
+from ._typing import ArrayLikeFloat
+from ._typing import ArrayLikeInt
+from ._typing import MatrixLikeBool
+from ._typing import MatrixLikeFloat
+from ._typing import MatrixLikeInt
 from ._typing import RotationLike
 from ._typing import TransformLike
-from ._typing import VectorLike
+from ._typing import VectorLikeBool
+from ._typing import VectorLikeFloat
+from ._typing import VectorLikeInt
 from ._typing import _Array0D as Array0D
 from ._typing import _Array1D as Array1D
 from ._typing import _Array2D as Array2D
@@ -21,13 +27,19 @@ __all__ = [
     'Array1D',
     'Array2D',
     'Array3D',
-    'ArrayLike',
+    'ArrayLikeBool',
+    'ArrayLikeFloat',
+    'ArrayLikeInt',
     'Floating',
     'Integer',
-    'MatrixLike',
+    'MatrixLikeBool',
+    'MatrixLikeFloat',
+    'MatrixLikeInt',
     'Real',
     'RotationLike',
     'Scalar',
     'TransformLike',
-    'VectorLike',
+    'VectorLikeBool',
+    'VectorLikeFloat',
+    'VectorLikeInt',
 ]

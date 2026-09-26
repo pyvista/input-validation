@@ -5,22 +5,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from typing import Union
 
-from ._array_like import NumberType
-from ._array_like import _ArrayLike
-from ._array_like import _ArrayLike1D
-from ._array_like import _ArrayLike2D
-from ._array_like import _Scalar
+from ._array_like import ArrayLikeFloat
+from ._array_like import MatrixLikeFloat
+from ._array_like import _FloatDType
 
 if TYPE_CHECKING:
     from pyvista_validation import _lazy_import
 
-# Generic over the Python scalar type of sequence items, which defaults to float.
-VectorLike = _ArrayLike1D[NumberType]
-MatrixLike = _ArrayLike2D[NumberType]
-ArrayLike = _ArrayLike[NumberType]
-
-RotationLike = Union[MatrixLike, '_lazy_import.vtkMatrix3x3', '_lazy_import.Rotation[tuple[()]]']
+RotationLike = Union[
+    MatrixLikeFloat, '_lazy_import.vtkMatrix3x3', '_lazy_import.Rotation[tuple[()]]'
+]
 TransformLike = Union[RotationLike, '_lazy_import.vtkMatrix4x4', '_lazy_import.vtkTransform']
 
 # A scalar or any array-like.
-_ArrayLikeOrScalar = Union[NumberType, _Scalar, ArrayLike[NumberType]]
+_ArrayLikeOrScalar = Union[float, _FloatDType, ArrayLikeFloat]
