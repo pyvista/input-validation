@@ -19,7 +19,7 @@ VectorLike = _ArrayLike1D[NumberType]
 MatrixLike = _ArrayLike2D[NumberType]
 ArrayLike = _ArrayLike[NumberType]
 
-RotationLike = Union[MatrixLike, '_lazy_import.vtkMatrix3x3', '_lazy_import.Rotation']
+RotationLike = Union[MatrixLike, '_lazy_import.vtkMatrix3x3', '_lazy_import.Rotation[tuple[()]]']
 TransformLike = Union[RotationLike, '_lazy_import.vtkMatrix4x4', '_lazy_import.vtkTransform']
 
 # A scalar or any array-like.
