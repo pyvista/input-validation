@@ -74,19 +74,10 @@ NumpyArray = npt.NDArray[_ScalarT]
 # Every scalar type an array can hold, abstract NumPy families included.
 _AnyDType = Union['np.floating[Any]', 'np.integer[Any]', np.bool_, _Text]
 _AnyScalarT = TypeVar('_AnyScalarT', bound=_AnyDType, default=_AnyScalar)
-if TYPE_CHECKING:
-    _Array0D: TypeAlias = np.ndarray[tuple[()], np.dtype[_AnyScalarT]]
-    _Array1D: TypeAlias = np.ndarray[tuple[int], np.dtype[_AnyScalarT]]
-    _Array2D: TypeAlias = np.ndarray[tuple[int, int], np.dtype[_AnyScalarT]]
-    _Array3D: TypeAlias = np.ndarray[tuple[int, int, int], np.dtype[_AnyScalarT]]
-elif np.lib.NumpyVersion(np.__version__) < '1.22.0':
-    # NumPy before 1.22 cannot subscript ndarray at runtime.
-    _Array0D = _Array1D = _Array2D = _Array3D = npt.NDArray[_AnyScalarT]
-else:
-    _Array0D = np.ndarray[tuple[()], np.dtype[_AnyScalarT]]
-    _Array1D = np.ndarray[tuple[int], np.dtype[_AnyScalarT]]
-    _Array2D = np.ndarray[tuple[int, int], np.dtype[_AnyScalarT]]
-    _Array3D = np.ndarray[tuple[int, int, int], np.dtype[_AnyScalarT]]
+_Array0D = np.ndarray[tuple[()], np.dtype[_AnyScalarT]]
+_Array1D = np.ndarray[tuple[int], np.dtype[_AnyScalarT]]
+_Array2D = np.ndarray[tuple[int, int], np.dtype[_AnyScalarT]]
+_Array3D = np.ndarray[tuple[int, int, int], np.dtype[_AnyScalarT]]
 
 # The Python scalar type of a sequence's items. Its default makes a bare ``ArrayLike`` mean
 # ``ArrayLike[float]``, which accepts ints and bools as well through numeric promotion.
