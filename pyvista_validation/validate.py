@@ -222,6 +222,24 @@ class _BroadcastKwargs(TypedDict, total=False):
     broadcast_to: int | tuple[int, ...] | None
 
 
+class _Broadcast1DKwargs(TypedDict, total=False):
+    """The ``broadcast_to`` option, limited to one-dimensional shapes."""
+
+    broadcast_to: int | tuple[int] | None
+
+
+class _Broadcast2DKwargs(TypedDict, total=False):
+    """The ``broadcast_to`` option, limited to two-dimensional shapes."""
+
+    broadcast_to: tuple[int, int] | None
+
+
+class _Reshape1DKwargs(TypedDict, total=False):
+    """The ``reshape_to`` option, limited to one-dimensional shapes."""
+
+    reshape_to: int | tuple[int] | None
+
+
 class _OutputKwargs(TypedDict, total=False):
     """The options that select the output type."""
 
@@ -284,8 +302,8 @@ class _DataRangeKwargs(
     _NonnegativeKwargs,
     _IntegerKwargs,
     _NdimKwargs,
-    _ReshapeKwargs,
-    _BroadcastKwargs,
+    _Reshape1DKwargs,
+    _Broadcast1DKwargs,
     total=False,
 ):
     """Keyword arguments ``validate_data_range`` forwards."""
@@ -297,10 +315,22 @@ class _ArrayNKwargs(
     _IntegerKwargs,
     _SortedCheckKwargs,
     _NdimKwargs,
-    _BroadcastKwargs,
+    _Broadcast1DKwargs,
     total=False,
 ):
-    """Keyword arguments ``validate_arrayN`` and ``validate_arrayNx3`` forward."""
+    """Keyword arguments ``validate_arrayN`` forwards."""
+
+
+class _ArrayNx3Kwargs(
+    _CheckKwargs,
+    _NonnegativeKwargs,
+    _IntegerKwargs,
+    _SortedCheckKwargs,
+    _NdimKwargs,
+    _Broadcast2DKwargs,
+    total=False,
+):
+    """Keyword arguments ``validate_arrayNx3`` forwards."""
 
 
 class _ArrayNKwargsAll(_ArrayNKwargs, _OutputKwargs, _RealKwargs, total=False):
@@ -311,7 +341,7 @@ class _ArrayNUnsignedKwargs(
     _CheckKwargs,
     _SortedCheckKwargs,
     _NdimKwargs,
-    _BroadcastKwargs,
+    _Broadcast1DKwargs,
     total=False,
 ):
     """Keyword arguments ``validate_arrayN_unsigned`` forwards."""
@@ -1403,71 +1433,71 @@ def validate_data_range(
 
 # fmt: off
 @overload
-def validate_arrayNx3(arr: npt.NDArray[_RealT], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[_RealT]: ...
+def validate_arrayNx3(arr: npt.NDArray[_RealT], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[_RealT]: ...
 @overload
-def validate_arrayNx3(arr: npt.NDArray[_ScalarT], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[_ScalarT]: ...  # type: ignore[overload-overlap]
+def validate_arrayNx3(arr: npt.NDArray[_ScalarT], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[_ScalarT]: ...  # type: ignore[overload-overlap]
 @overload
-def validate_arrayNx3(arr: Sequence[bool] | Sequence[Sequence[bool]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[np.bool_]: ...  # type: ignore[overload-overlap]
+def validate_arrayNx3(arr: Sequence[bool] | Sequence[Sequence[bool]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[np.bool_]: ...  # type: ignore[overload-overlap]
 @overload
-def validate_arrayNx3(arr: Sequence[int] | Sequence[Sequence[int]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[np.int64]: ...
+def validate_arrayNx3(arr: Sequence[int] | Sequence[Sequence[int]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[np.int64]: ...
 @overload
-def validate_arrayNx3(arr: Sequence[float] | Sequence[Sequence[float]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[np.float64]: ...
+def validate_arrayNx3(arr: Sequence[float] | Sequence[Sequence[float]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[np.float64]: ...
 @overload
-def validate_arrayNx3(arr: npt.NDArray[np.str_] | Sequence[str] | Sequence[Sequence[str]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[np.str_]: ...
+def validate_arrayNx3(arr: npt.NDArray[np.str_] | Sequence[str] | Sequence[Sequence[str]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[np.str_]: ...
 @overload
-def validate_arrayNx3(arr: npt.NDArray[_RealT] | Sequence[_RealT] | Sequence[Sequence[_RealT]] | Sequence[npt.NDArray[_RealT]] | Sequence[Sequence[npt.NDArray[_RealT]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[_RealT]: ...
+def validate_arrayNx3(arr: npt.NDArray[_RealT] | Sequence[_RealT] | Sequence[Sequence[_RealT]] | Sequence[npt.NDArray[_RealT]] | Sequence[Sequence[npt.NDArray[_RealT]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[_RealT]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[_ScalarT], must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[_ScalarT]: ...  # type: ignore[overload-overlap]
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[_ScalarT], must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[_ScalarT]: ...  # type: ignore[overload-overlap]
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[bool], must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[np.bool_]: ...  # type: ignore[overload-overlap]
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[bool], must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[np.bool_]: ...  # type: ignore[overload-overlap]
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[int], must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[np.int64]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[int], must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[np.int64]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[float], must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[np.float64]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[float], must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[np.float64]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[_Scalar]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: bool = ..., to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[_Scalar]: ...
 @overload
-def validate_arrayNx3(arr: _AnyArrayLikeOrScalar, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: Literal[False], to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> _Array2D[_AnyScalar]: ...  # type: ignore[overload-overlap]
+def validate_arrayNx3(arr: _AnyArrayLikeOrScalar, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: Literal[False], to_list: Literal[False] = False, to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _Array2D[_AnyScalar]: ...  # type: ignore[overload-overlap]
 @overload
-def validate_arrayNx3(arr: npt.NDArray[np.bool_] | Sequence[bool] | Sequence[Sequence[bool]] | Sequence[npt.NDArray[np.bool_]] | Sequence[Sequence[npt.NDArray[np.bool_]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> list[list[bool]]: ...
+def validate_arrayNx3(arr: npt.NDArray[np.bool_] | Sequence[bool] | Sequence[Sequence[bool]] | Sequence[npt.NDArray[np.bool_]] | Sequence[Sequence[npt.NDArray[np.bool_]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> list[list[bool]]: ...
 @overload
-def validate_arrayNx3(arr: npt.NDArray[_Integer] | Sequence[int] | Sequence[Sequence[int]] | Sequence[npt.NDArray[_Integer]] | Sequence[Sequence[npt.NDArray[_Integer]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> list[list[int]]: ...
+def validate_arrayNx3(arr: npt.NDArray[_Integer] | Sequence[int] | Sequence[Sequence[int]] | Sequence[npt.NDArray[_Integer]] | Sequence[Sequence[npt.NDArray[_Integer]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> list[list[int]]: ...
 @overload
-def validate_arrayNx3(arr: npt.NDArray[_Floating] | Sequence[float] | Sequence[Sequence[float]] | Sequence[npt.NDArray[_Floating]] | Sequence[Sequence[npt.NDArray[_Floating]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> list[list[float]]: ...
+def validate_arrayNx3(arr: npt.NDArray[_Floating] | Sequence[float] | Sequence[Sequence[float]] | Sequence[npt.NDArray[_Floating]] | Sequence[Sequence[npt.NDArray[_Floating]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> list[list[float]]: ...
 @overload
-def validate_arrayNx3(arr: npt.NDArray[np.str_] | Sequence[str] | Sequence[Sequence[str]] | Sequence[npt.NDArray[np.str_]] | Sequence[Sequence[npt.NDArray[np.str_]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> list[list[str]]: ...
+def validate_arrayNx3(arr: npt.NDArray[np.str_] | Sequence[str] | Sequence[Sequence[str]] | Sequence[npt.NDArray[np.str_]] | Sequence[Sequence[npt.NDArray[np.str_]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> list[list[str]]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[bool | np.bool_], must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> list[list[bool]]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[bool | np.bool_], must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> list[list[bool]]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[int | _Integer], must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> list[list[int]]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[int | _Integer], must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> list[list[int]]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[float | _Floating], must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> list[list[float]]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[float | _Floating], must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> list[list[float]]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> list[list[bool]] | list[list[int]] | list[list[float]]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: bool = ..., to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> list[list[bool]] | list[list[int]] | list[list[float]]: ...
 @overload
-def validate_arrayNx3(arr: _AnyArrayLikeOrScalar, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: Literal[False], to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNKwargs]) -> list[list[bool]] | list[list[int]] | list[list[float]] | list[list[str]]: ...  # type: ignore[overload-overlap]
+def validate_arrayNx3(arr: _AnyArrayLikeOrScalar, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: Literal[False], to_list: Literal[True], to_tuple: Literal[False] = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> list[list[bool]] | list[list[int]] | list[list[float]] | list[list[str]]: ...  # type: ignore[overload-overlap]
 @overload
-def validate_arrayNx3(arr: npt.NDArray[np.bool_] | Sequence[bool] | Sequence[Sequence[bool]] | Sequence[npt.NDArray[np.bool_]] | Sequence[Sequence[npt.NDArray[np.bool_]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNKwargs]) -> tuple[tuple[bool, bool, bool], ...]: ...
+def validate_arrayNx3(arr: npt.NDArray[np.bool_] | Sequence[bool] | Sequence[Sequence[bool]] | Sequence[npt.NDArray[np.bool_]] | Sequence[Sequence[npt.NDArray[np.bool_]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNx3Kwargs]) -> tuple[tuple[bool, bool, bool], ...]: ...
 @overload
-def validate_arrayNx3(arr: npt.NDArray[_Integer] | Sequence[int] | Sequence[Sequence[int]] | Sequence[npt.NDArray[_Integer]] | Sequence[Sequence[npt.NDArray[_Integer]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNKwargs]) -> tuple[tuple[int, int, int], ...]: ...
+def validate_arrayNx3(arr: npt.NDArray[_Integer] | Sequence[int] | Sequence[Sequence[int]] | Sequence[npt.NDArray[_Integer]] | Sequence[Sequence[npt.NDArray[_Integer]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNx3Kwargs]) -> tuple[tuple[int, int, int], ...]: ...
 @overload
-def validate_arrayNx3(arr: npt.NDArray[_Floating] | Sequence[float] | Sequence[Sequence[float]] | Sequence[npt.NDArray[_Floating]] | Sequence[Sequence[npt.NDArray[_Floating]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNKwargs]) -> tuple[tuple[float, float, float], ...]: ...
+def validate_arrayNx3(arr: npt.NDArray[_Floating] | Sequence[float] | Sequence[Sequence[float]] | Sequence[npt.NDArray[_Floating]] | Sequence[Sequence[npt.NDArray[_Floating]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNx3Kwargs]) -> tuple[tuple[float, float, float], ...]: ...
 @overload
-def validate_arrayNx3(arr: npt.NDArray[np.str_] | Sequence[str] | Sequence[Sequence[str]] | Sequence[npt.NDArray[np.str_]] | Sequence[Sequence[npt.NDArray[np.str_]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNKwargs]) -> tuple[tuple[str, str, str], ...]: ...
+def validate_arrayNx3(arr: npt.NDArray[np.str_] | Sequence[str] | Sequence[Sequence[str]] | Sequence[npt.NDArray[np.str_]] | Sequence[Sequence[npt.NDArray[np.str_]]], /, *, reshape: bool = ..., dtype_out: None = None, must_be_real: Literal[False], to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNx3Kwargs]) -> tuple[tuple[str, str, str], ...]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[bool | np.bool_], must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNKwargs]) -> tuple[tuple[bool, bool, bool], ...]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[bool | np.bool_], must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNx3Kwargs]) -> tuple[tuple[bool, bool, bool], ...]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[int | _Integer], must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNKwargs]) -> tuple[tuple[int, int, int], ...]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[int | _Integer], must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNx3Kwargs]) -> tuple[tuple[int, int, int], ...]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[float | _Floating], must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNKwargs]) -> tuple[tuple[float, float, float], ...]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: type[float | _Floating], must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNx3Kwargs]) -> tuple[tuple[float, float, float], ...]: ...
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNKwargs]) -> tuple[tuple[bool, bool, bool], ...] | tuple[tuple[int, int, int], ...] | tuple[tuple[float, float, float], ...]: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: bool = ..., to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNx3Kwargs]) -> tuple[tuple[bool, bool, bool], ...] | tuple[tuple[int, int, int], ...] | tuple[tuple[float, float, float], ...]: ...
 @overload
-def validate_arrayNx3(arr: _AnyArrayLikeOrScalar, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: Literal[False], to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNKwargs]) -> tuple[tuple[bool, bool, bool], ...] | tuple[tuple[int, int, int], ...] | tuple[tuple[float, float, float], ...] | tuple[tuple[str, str, str], ...]: ...  # type: ignore[overload-overlap]
+def validate_arrayNx3(arr: _AnyArrayLikeOrScalar, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: Literal[False], to_list: bool = False, to_tuple: Literal[True], **kwargs: Unpack[_ArrayNx3Kwargs]) -> tuple[tuple[bool, bool, bool], ...] | tuple[tuple[int, int, int], ...] | tuple[tuple[float, float, float], ...] | tuple[tuple[str, str, str], ...]: ...  # type: ignore[overload-overlap]
 @overload
-def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: bool = ..., to_list: bool = False, to_tuple: bool = False, **kwargs: Unpack[_ArrayNKwargs]) -> _ArrayNx3Out: ...
+def validate_arrayNx3(arr: VectorLike | MatrixLike, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: bool = ..., to_list: bool = False, to_tuple: bool = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _ArrayNx3Out: ...
 @overload
-def validate_arrayNx3(arr: _AnyArrayLikeOrScalar, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: Literal[False], to_list: bool = False, to_tuple: bool = False, **kwargs: Unpack[_ArrayNKwargs]) -> _ArrayNx3AnyOut: ...
+def validate_arrayNx3(arr: _AnyArrayLikeOrScalar, /, *, reshape: bool = ..., dtype_out: _DTypeLike | None = None, must_be_real: Literal[False], to_list: bool = False, to_tuple: bool = False, **kwargs: Unpack[_ArrayNx3Kwargs]) -> _ArrayNx3AnyOut: ...
 # fmt: on
 def validate_arrayNx3(  # noqa: N802
     arr: _AnyArrayLikeOrScalar, /, *, reshape: bool = True, **kwargs: Unpack[_AllKwargs]
