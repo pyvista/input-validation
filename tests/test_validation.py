@@ -54,13 +54,9 @@ from pyvista_validation._cast_array import _cast_to_numpy
 from pyvista_validation._cast_array import _cast_to_tuple
 from pyvista_validation.check import _is_floating
 from pyvista_validation.check import _is_integer
+from pyvista_validation.check import _is_ndim
 from pyvista_validation.check import _is_real
 from pyvista_validation.check import _validate_shape_value
-from pyvista_validation.typing import is_array_0d
-from pyvista_validation.typing import is_array_1d
-from pyvista_validation.typing import is_array_2d
-from pyvista_validation.typing import is_array_3d
-from pyvista_validation.typing import is_array_nd
 from pyvista_validation.validate import _array_from_vtkmatrix
 from pyvista_validation.validate import _set_default_kwarg_mandatory
 
@@ -2204,41 +2200,11 @@ def test_dtype_predicates(dtype, floating, integer, real):
 
 
 @pytest.mark.parametrize('shape', [(), (2,), (2, 2), (2, 2, 2)])
-def test_rank_guards(shape):
-    """Each rank guard accepts exactly arrays of its rank, and is_array_nd any array."""
+def test_rank_predicate(shape):
+    """The rank predicate accepts exactly the array's number of dimensions."""
     array = np.zeros(shape)
-    guards = [is_array_0d, is_array_1d, is_array_2d, is_array_3d]
-    for ndim, guard in enumerate(guards):
-        assert guard(array) is (ndim == len(shape))
-    assert is_array_nd(array) is True
-
-
-@pytest.mark.parametrize('value', [[1.0, 2.0], 1.0, 'a', None])
-def test_rank_guards_reject_non_arrays(value):
-    """No guard accepts a value that is not an ndarray."""
-    assert not is_array_nd(value)
-    assert not is_array_1d(value)
-
-
-@pytest.mark.parametrize(
-    ('dtype', 'expected'),
-    [
-        (None, True),
-        (np.floating, True),
-        (np.float64, True),
-        (np.float32, False),
-        (np.integer, False),
-    ],
-)
-def test_rank_guards_check_dtype(dtype, expected):
-    """A guard given a dtype accepts only arrays whose dtype is a subtype of it."""
-    assert is_array_1d(np.zeros(2), dtype) is expected
-
-
-def test_rank_guards_accept_dtype_instances():
-    """A dtype instance works like its scalar type."""
-    assert is_array_nd(np.zeros(2), np.dtype(np.float64))
-    assert not is_array_nd(np.zeros(2), np.dtype(np.float32))
+    for ndim in range(4):
+        assert _is_ndim(array, ndim) is (ndim == len(shape))
 
 
 def test_check_finite_rejects_a_single_non_finite_element():

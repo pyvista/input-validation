@@ -73,13 +73,11 @@ NumpyArray = npt.NDArray[_ScalarT]
 # Arrays of a known rank, for outputs whose rank the validation guarantees.
 # Every scalar type an array can hold, abstract NumPy families included.
 _AnyDType = Union['np.floating[Any]', 'np.integer[Any]', np.bool_, _Text]
-# Arrays by rank, as optype defines them: any NumPy scalar type, and Any when left bare.
-_GenericT = TypeVar('_GenericT', bound=np.generic, default=Any)
-_ArrayND = np.ndarray[tuple[int, ...], np.dtype[_GenericT]]
-_Array0D = np.ndarray[tuple[()], np.dtype[_GenericT]]
-_Array1D = np.ndarray[tuple[int], np.dtype[_GenericT]]
-_Array2D = np.ndarray[tuple[int, int], np.dtype[_GenericT]]
-_Array3D = np.ndarray[tuple[int, int, int], np.dtype[_GenericT]]
+_AnyScalarT = TypeVar('_AnyScalarT', bound=_AnyDType, default=_AnyScalar)
+_Array0D = np.ndarray[tuple[()], np.dtype[_AnyScalarT]]
+_Array1D = np.ndarray[tuple[int], np.dtype[_AnyScalarT]]
+_Array2D = np.ndarray[tuple[int, int], np.dtype[_AnyScalarT]]
+_Array3D = np.ndarray[tuple[int, int, int], np.dtype[_AnyScalarT]]
 
 # The Python scalar type of a sequence's items. Its default makes a bare ``ArrayLike`` mean
 # ``ArrayLike[float]``, which accepts ints and bools as well through numeric promotion.
