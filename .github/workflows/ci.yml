@@ -52,10 +52,43 @@ jobs:
       run: uv run python -c "from pyvista_validation import _accelerate; assert _accelerate.enabled"
     - run: uv run pytest tests/ --ignore=tests/typing --cov
     - name: Test the pure Python implementations too
-      run: uv run pytest tests/ --ignore=tests/typing --cov --cov-append --cov-report=xml
+      run: uv run pytest tests/ --ignore=tests/typing --cov --cov-append
       env:
         PYVISTA_VALIDATION_ACCELERATE: 'false'
+    - run: mv .coverage .coverage.test-${{ matrix.python-version }}
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7.0.1
+      with:
+        name: coverage-test-${{ matrix.python-version }}
+        path: .coverage.test-${{ matrix.python-version }}
+        include-hidden-files: true
+
+  coverage:
+      # Combine the matrix's coverage and gate the total and the patch.
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+    - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7   # v10.2.0
+      with:
+        enable-cache: false
+    - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c   # v8.0.1
+      with:
+        pattern: coverage-*
+        path: coverage-data
+        merge-multiple: true
+    - run: uv run --only-group coverage coverage combine coverage-data
+    - run: uv run --only-group coverage coverage xml
+    - run: uv run --only-group coverage coverage report --fail-under=99
+    - name: Patch coverage
+      if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+      run: uv run --only-group coverage diff-cover coverage.xml --compare-branch "origin/$GITHUB_BASE_REF" --fail-under 95 --format markdown:diff-cover.md
+    - if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+      run: cat diff-cover.md >> "$GITHUB_STEP_SUMMARY" || true
     - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5   # v7.1.1
+      if: ${{ !cancelled() }}
       with:
         files: ./coverage.xml
         flags: tests
@@ -170,7 +203,7 @@ jobs:
       id: deployment
 
   sdist:
-    needs: [pre-commit, test, typing, test-minimal, downstream, docs]
+    needs: [pre-commit, test, coverage, typing, test-minimal, downstream, docs]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
@@ -188,7 +221,7 @@ jobs:
 
   wheels:
       # The extension targets the stable ABI, so one wheel per platform serves every Python.
-    needs: [pre-commit, test, typing, test-minimal, downstream, docs]
+    needs: [pre-commit, test, coverage, typing, test-minimal, downstream, docs]
     strategy:
       fail-fast: false
       matrix:
