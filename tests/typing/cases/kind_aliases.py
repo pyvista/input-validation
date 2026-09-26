@@ -136,15 +136,35 @@ def rejected() -> None:
     vector_float([np.float32(1), 2.0])  # type: ignore[arg-type]
     matrix_float([[1.0, 2], [3, True]])  # type: ignore[arg-type]
     matrix_float([FLOATS, INTS])  # type: ignore[arg-type]
+    vector_float([np.float64(1), np.int32(2)])  # type: ignore[arg-type]
+    matrix_float([FLOATS, [np.float32(1)]])  # type: ignore[arg-type]
+    array_float([1.0, [2.0]])  # type: ignore[arg-type]
 
 
 # Never called; NumPy accepts each alias as an array-like.
 def numpy_accepts(
-    vector: VectorLikeFloat, matrix: MatrixLikeInt, array: ArrayLikeFloat, mask: ArrayLikeBool
+    vector: VectorLikeFloat,
+    indices: VectorLikeInt,
+    flags: VectorLikeBool,
+    matrix: MatrixLikeFloat,
+    cells: MatrixLikeInt,
+    mask: MatrixLikeBool,
+    array: ArrayLikeFloat,
+    counts: ArrayLikeInt,
+    selection: ArrayLikeBool,
 ) -> None:
     """Pass each kind of alias to NumPy."""
     np.allclose(vector, 0)
     np.linalg.norm(vector)
-    np.concatenate(matrix)
+    np.dot(vector, vector)
+    np.cross(vector, vector)
+    np.prod(indices)
+    np.any(flags)
+    np.linalg.inv(matrix)
+    np.matmul(matrix, matrix)
+    np.concatenate(cells)
+    np.where(mask, matrix, 0)
     np.sin(array)
-    np.any(mask)
+    np.clip(array, 0, 1)
+    np.mean(counts)
+    np.array_equal(selection, array)
