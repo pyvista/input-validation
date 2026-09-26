@@ -45,6 +45,7 @@ if TYPE_CHECKING:
 
     from pyvista_validation._typing import VectorLike
     from pyvista_validation._typing import _AnyArrayLikeOrScalar
+    from pyvista_validation._typing import _AnyDType
     from pyvista_validation._typing import _AnyNonArrayLikeOrScalar
     from pyvista_validation._typing import _AnyScalarT
     from pyvista_validation._typing import _Array0D
@@ -765,12 +766,12 @@ def check_ndim(array: np.ndarray[tuple[int, ...], np.dtype[_AnyScalarT]], /, ndi
 def check_ndim(array: _NonArrayT, /, ndim: int | VectorLike, *, name: str = ...) -> _NonArrayT: ...
 # fmt: on
 def check_ndim(
-    array: _AnyArrayT,
+    array: npt.NDArray[_AnyDType] | _AnyNonArrayLikeOrScalar,
     /,
     ndim: int | VectorLike,
     *,
     name: str = 'Array',
-) -> _AnyArrayT:
+) -> npt.NDArray[_AnyDType] | _AnyNonArrayLikeOrScalar:
     """Check if an array has the specified number of dimensions.
 
     .. note::
@@ -821,7 +822,8 @@ def check_ndim(
 
     """
     ndim_ = np.atleast_1d(_cast_to_numpy(ndim))
-    array_ndim = _cast_to_numpy(array).ndim
+    # At runtime an array's dtype is always one of the concrete scalar types.
+    array_ndim = _cast_to_numpy(cast('_AnyArrayLikeOrScalar', array)).ndim
     if array_ndim not in ndim_:
         check_ndim(ndim, [0, 1], name='ndim')
         check_integer(ndim_, strict=True, name='ndim')

@@ -31,7 +31,7 @@ from pyvista_validation import check_sorted
 from pyvista_validation import check_string
 from pyvista_validation import check_subdtype
 from pyvista_validation import check_type
-from pyvista_validation._typing import _AnyScalar
+from pyvista_validation._typing import _AnyDType
 from pyvista_validation._typing import _Array0D
 from pyvista_validation._typing import _Array1D
 from pyvista_validation._typing import _Array2D
@@ -63,6 +63,8 @@ TEXT: npt.NDArray[np.str_] = np.array(['a', 'b'])
 ANY_FLOATS: npt.NDArray[Any] = np.ones(2)
 ANY_INTS: npt.NDArray[Any] = np.ones(2, dtype=np.int32)
 ANY_BOOLS: npt.NDArray[Any] = np.ones(2, dtype=bool)
+ANY_INTEGERS: npt.NDArray[np.integer[Any]] = np.ones(2, dtype=np.int32)
+REALS_OR_BOOLS: npt.NDArray[np.floating[Any] | np.integer[Any] | np.bool_] = np.ones((2, 2))
 # Arrays typed with a union of dtypes.
 SCALAR_DTYPES: npt.NDArray[_Scalar] = np.ones(2, dtype=np.uint8)
 F32_OR_TEXT: npt.NDArray[np.float32] | npt.NDArray[np.str_] = np.ones(2, dtype=np.float32)
@@ -133,7 +135,12 @@ assert_types(check_ndim(TEXT, 1), _Array1D[np.str_])
 assert_types(check_ndim(ANY_FLOATS, 1), _Array1D[Any])
 assert_types(check_ndim(np.asarray([1.0]), 1), _Array1D[np.float64])
 # A union of dtypes is narrowed to the rank over every scalar type; _is_ndim keeps the union.
-assert_types(check_ndim(F32_OR_TEXT, 1), _Array1D[_AnyScalar])
+assert_types(check_ndim(F32_OR_TEXT, 1), _Array1D[_AnyDType])
+# Abstract NumPy dtypes, as the array-like aliases spell them, keep their type.
+assert_types(check_ndim(ANY_INTEGERS, 1), _Array1D[np.integer[Any]])
+assert_types(
+    check_ndim(REALS_OR_BOOLS, 2), _Array2D[np.floating[Any] | np.integer[Any] | np.bool_]
+)
 assert_types(check_ndim(ONES, (1, 2)), npt.NDArray[np.float64])
 assert_types(check_ndim(ONES, rank()), npt.NDArray[np.float64])
 assert_types(check_number(1), int)

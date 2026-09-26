@@ -13,6 +13,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 import sys
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import TypeAlias
 from typing import Union
 
@@ -70,7 +71,9 @@ _ScalarT = TypeVar('_ScalarT', bound=_Scalar, default=_Scalar)
 NumpyArray = npt.NDArray[_ScalarT]
 
 # Arrays of a known rank, for outputs whose rank the validation guarantees.
-_AnyScalarT = TypeVar('_AnyScalarT', bound=_AnyScalar, default=_AnyScalar)
+# Every scalar type an array can hold, abstract NumPy families included.
+_AnyDType = Union['np.floating[Any]', 'np.integer[Any]', np.bool_, _Text]
+_AnyScalarT = TypeVar('_AnyScalarT', bound=_AnyDType, default=_AnyScalar)
 if TYPE_CHECKING:
     _Array0D: TypeAlias = np.ndarray[tuple[()], np.dtype[_AnyScalarT]]
     _Array1D: TypeAlias = np.ndarray[tuple[int], np.dtype[_AnyScalarT]]
