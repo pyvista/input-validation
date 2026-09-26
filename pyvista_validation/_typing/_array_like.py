@@ -146,7 +146,6 @@ _ToAnyTuple = _ToTuple | _ToTupleStr
 _PyT = TypeVar('_PyT', default=float)
 _DTypeT = TypeVar('_DTypeT', bound=_AnyDType, default=_AnyDType)
 _Item = Union[_PyT, _DTypeT, npt.NDArray[_DTypeT]]
-# _PyT comes first in each alias, since a generic alias takes its parameters in that order.
 _VectorLikeOf = Union[Sequence[Union[_PyT, _DTypeT]], _Array1D[_DTypeT]]
 _MatrixLikeOf = Union[Sequence[_VectorLikeOf[_PyT, _DTypeT]], _Array2D[_DTypeT]]
 # Sequences nested up to four deep, each level holding items or shallower sequences.

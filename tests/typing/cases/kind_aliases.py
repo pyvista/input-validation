@@ -27,6 +27,7 @@ UNKNOWN_MATRIX: npt.NDArray[Any] = np.zeros((2, 3))
 COMPLEX: npt.NDArray[np.complex128] = np.zeros(3, dtype=complex)
 MATRIX: np.ndarray[tuple[int, int], np.dtype[np.float64]] = np.zeros((2, 3))
 VECTOR: np.ndarray[tuple[int], np.dtype[np.float64]] = np.zeros(3)
+TENSOR: np.ndarray[tuple[int, int, int], np.dtype[np.float64]] = np.zeros((2, 2, 2))
 
 
 def vector_float(value: VectorLikeFloat) -> VectorLikeFloat:
@@ -127,3 +128,9 @@ def rejected() -> None:
     matrix_int([[1.5]])  # type: ignore[list-item]
     array_int(FLOATS)  # type: ignore[arg-type]
     array_bool([[1]])  # type: ignore[list-item]
+    vector_float([FLOATS])  # type: ignore[list-item]
+    vector_int([np.float64(1)])  # type: ignore[list-item]
+    matrix_float(TENSOR)  # type: ignore[arg-type]
+    array_float(COMPLEX)  # type: ignore[arg-type]
+    array_float(np.float64(1))  # type: ignore[arg-type]
+    array_float([[[[[1.0]]]]])  # type: ignore[list-item]
