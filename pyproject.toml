@@ -78,6 +78,7 @@ branch = true
 # _typing is imported only by type checkers, never at runtime.
 omit = ['*/_version.py', 'pyvista_validation/_typing/*']
 parallel = true
+relative_files = true
 source = ['pyvista_validation']
 
 [tool.coverage.report]
