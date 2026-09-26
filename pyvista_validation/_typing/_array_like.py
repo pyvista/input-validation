@@ -13,6 +13,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 import sys
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import TypeAlias
 from typing import Union
 
@@ -68,6 +69,15 @@ else:
 # of them.
 _ScalarT = TypeVar('_ScalarT', bound=_Scalar, default=_Scalar)
 NumpyArray = npt.NDArray[_ScalarT]
+
+# Arrays of a known rank, for outputs whose rank the validation guarantees.
+# Every scalar type an array can hold, abstract NumPy families included.
+_AnyDType = Union['np.floating[Any]', 'np.integer[Any]', np.bool_, _Text]
+_AnyScalarT = TypeVar('_AnyScalarT', bound=_AnyDType, default=_AnyScalar)
+_Array0D = np.ndarray[tuple[()], np.dtype[_AnyScalarT]]
+_Array1D = np.ndarray[tuple[int], np.dtype[_AnyScalarT]]
+_Array2D = np.ndarray[tuple[int, int], np.dtype[_AnyScalarT]]
+_Array3D = np.ndarray[tuple[int, int, int], np.dtype[_AnyScalarT]]
 
 # The Python scalar type of a sequence's items. Its default makes a bare ``ArrayLike`` mean
 # ``ArrayLike[float]``, which accepts ints and bools as well through numeric promotion.
@@ -201,3 +211,18 @@ _AnyArrayLike4D = Union[
 ]
 _AnyArrayLike = Union[_AnyArrayLike1D, _AnyArrayLike2D, _AnyArrayLike3D, _AnyArrayLike4D]
 _AnyArrayLikeOrScalar = Union[float, str, bytes, _AnyScalar, _AnyArrayLike]
+# The same without NumPy arrays: scalars and nested sequences.
+_AnyNonArrayLikeOrScalar = Union[
+    float,
+    str,
+    bytes,
+    _AnyScalar,
+    Sequence[_AnyItem],
+    Sequence[npt.NDArray[_AnyScalar]],
+    Sequence[Sequence[_AnyItem]],
+    Sequence[Sequence[npt.NDArray[_AnyScalar]]],
+    Sequence[Sequence[Sequence[_AnyItem]]],
+    Sequence[Sequence[Sequence[npt.NDArray[_AnyScalar]]]],
+    Sequence[Sequence[Sequence[Sequence[_AnyItem]]]],
+    Sequence[Sequence[Sequence[Sequence[npt.NDArray[_AnyScalar]]]]],
+]
