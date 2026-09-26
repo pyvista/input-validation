@@ -91,7 +91,7 @@ assert_types(vector_bool(BOOLS), VectorLikeBool)
 
 # A matrix is a 2-D array or a sequence of vectors, which may themselves be arrays.
 assert_types(matrix_float([[1.0, 2.0], [3.0, 4.0]]), MatrixLikeFloat)
-assert_types(matrix_float([FLOATS, INTS]), MatrixLikeFloat)
+assert_types(matrix_float([FLOATS, FLOATS]), MatrixLikeFloat)
 assert_types(matrix_float(MATRIX), MatrixLikeFloat)
 assert_types(matrix_float(UNKNOWN_MATRIX), MatrixLikeFloat)
 assert_types(matrix_int([[1, 2], [3, 4]]), MatrixLikeInt)
@@ -111,26 +111,40 @@ def promoted() -> None:
     """Pass Python ints and bools where floats and ints are expected."""
     vector_float([1.0, 2, True])
     vector_int([1, 2, True])
-    matrix_float([[1.0, 2], [3, True]])
 
 
 # Never called; each ignore is reported as unused if the checker stops rejecting the call.
 def rejected() -> None:
-    """Pass inputs of the wrong kind or rank."""
+    """Pass inputs of the wrong kind or rank, or mixing kinds."""
     vector_float(COMPLEX)  # type: ignore[arg-type]
-    vector_float(['a'])  # type: ignore[list-item]
+    vector_float(['a'])  # type: ignore[arg-type]
     vector_float(MATRIX)  # type: ignore[arg-type]
-    vector_int([1.5])  # type: ignore[list-item]
+    vector_int([1.5])  # type: ignore[arg-type]
     vector_int(FLOATS)  # type: ignore[arg-type]
-    vector_bool([1])  # type: ignore[list-item]
+    vector_bool([1])  # type: ignore[arg-type]
     vector_bool(INTS)  # type: ignore[arg-type]
     matrix_float(VECTOR)  # type: ignore[arg-type]
-    matrix_int([[1.5]])  # type: ignore[list-item]
+    matrix_int([[1.5]])  # type: ignore[arg-type]
     array_int(FLOATS)  # type: ignore[arg-type]
-    array_bool([[1]])  # type: ignore[list-item]
-    vector_float([FLOATS])  # type: ignore[list-item]
-    vector_int([np.float64(1)])  # type: ignore[list-item]
+    array_bool([[1]])  # type: ignore[arg-type]
+    vector_float([FLOATS])  # type: ignore[arg-type]
+    vector_int([np.float64(1)])  # type: ignore[arg-type]
     matrix_float(TENSOR)  # type: ignore[arg-type]
     array_float(COMPLEX)  # type: ignore[arg-type]
     array_float(np.float64(1))  # type: ignore[arg-type]
-    array_float([[[[[1.0]]]]])  # type: ignore[list-item]
+    array_float([[[[[1.0]]]]])  # type: ignore[arg-type]
+    vector_float([np.float32(1), 2.0])  # type: ignore[arg-type]
+    matrix_float([[1.0, 2], [3, True]])  # type: ignore[arg-type]
+    matrix_float([FLOATS, INTS])  # type: ignore[arg-type]
+
+
+# Never called; NumPy accepts each alias as an array-like.
+def numpy_accepts(
+    vector: VectorLikeFloat, matrix: MatrixLikeInt, array: ArrayLikeFloat, mask: ArrayLikeBool
+) -> None:
+    """Pass each kind of alias to NumPy."""
+    np.allclose(vector, 0)
+    np.linalg.norm(vector)
+    np.concatenate(matrix)
+    np.sin(array)
+    np.any(mask)

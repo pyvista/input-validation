@@ -145,22 +145,26 @@ _ToAnyTuple = _ToTuple | _ToTupleStr
 # Array-likes of one kind, matching optype's ToFloat1D and friends; a float admits int and bool.
 _PyT = TypeVar('_PyT', default=float)
 _DTypeT = TypeVar('_DTypeT', bound=_AnyDType, default=_AnyDType)
-_Item = Union[_PyT, _DTypeT, npt.NDArray[_DTypeT]]
-_VectorLikeOf = Union[Sequence[Union[_PyT, _DTypeT]], _Array1D[_DTypeT]]
-_MatrixLikeOf = Union[Sequence[_VectorLikeOf[_PyT, _DTypeT]], _Array2D[_DTypeT]]
-# Sequences nested up to four deep, each level holding items or shallower sequences.
-_Nested1 = Sequence[_Item[_PyT, _DTypeT]]
-_Nested2 = Sequence[Union[_Item[_PyT, _DTypeT], _Nested1[_PyT, _DTypeT]]]
-_Nested3 = Sequence[Union[_Item[_PyT, _DTypeT], _Nested1[_PyT, _DTypeT], _Nested2[_PyT, _DTypeT]]]
-_Nested4 = Sequence[
-    Union[
-        _Item[_PyT, _DTypeT],
-        _Nested1[_PyT, _DTypeT],
-        _Nested2[_PyT, _DTypeT],
-        _Nested3[_PyT, _DTypeT],
-    ]
+# Each sequence holds Python values or NumPy values, never both, as NumPy's ArrayLike requires.
+_VectorLikeOf = Union[Sequence[_PyT], Sequence[_DTypeT], _Array1D[_DTypeT]]
+_MatrixLikeOf = Union[
+    Sequence[Sequence[_PyT]],
+    Sequence[Union[Sequence[_DTypeT], _Array1D[_DTypeT]]],
+    _Array2D[_DTypeT],
 ]
-_ArrayLikeOf = Union[_Nested4[_PyT, _DTypeT], npt.NDArray[_DTypeT]]
+# Sequences nested up to four deep, each level holding items or shallower sequences.
+_PyNested1 = Sequence[_PyT]
+_PyNested2 = Sequence[Union[_PyT, _PyNested1[_PyT]]]
+_PyNested3 = Sequence[Union[_PyT, _PyNested1[_PyT], _PyNested2[_PyT]]]
+_PyNested4 = Sequence[Union[_PyT, _PyNested1[_PyT], _PyNested2[_PyT], _PyNested3[_PyT]]]
+_NpItem = Union[_DTypeT, npt.NDArray[_DTypeT]]
+_NpNested1 = Sequence[_NpItem[_DTypeT]]
+_NpNested2 = Sequence[Union[_NpItem[_DTypeT], _NpNested1[_DTypeT]]]
+_NpNested3 = Sequence[Union[_NpItem[_DTypeT], _NpNested1[_DTypeT], _NpNested2[_DTypeT]]]
+_NpNested4 = Sequence[
+    Union[_NpItem[_DTypeT], _NpNested1[_DTypeT], _NpNested2[_DTypeT], _NpNested3[_DTypeT]]
+]
+_ArrayLikeOf = Union[_PyNested4[_PyT], _NpNested4[_DTypeT], npt.NDArray[_DTypeT]]
 
 _FloatDType = Union[np.floating, np.integer, np.bool_]
 _IntDType = Union[np.integer, np.bool_]
