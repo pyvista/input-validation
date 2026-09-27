@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 from pyvista_validation import validate_array
+from pyvista_validation._typing import _AnyDType
 from pyvista_validation._typing import _AnyScalar
 from pyvista_validation._typing import _ArrayLikeOrScalar
 from pyvista_validation._typing import _Floating
@@ -30,7 +31,7 @@ from pyvista_validation._typing import _ToTupleInt
 from pyvista_validation._typing import _ToTupleStr
 
 _ArrayOut = npt.NDArray[_Scalar] | _ToList | _ToTuple
-_AnyArrayOut = npt.NDArray[_AnyScalar] | _ToAnyList | _ToAnyTuple
+_AnyArrayOut = npt.NDArray[_AnyDType] | _ToAnyList | _ToAnyTuple
 
 
 def flag() -> bool:

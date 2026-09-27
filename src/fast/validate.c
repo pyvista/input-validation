@@ -651,29 +651,38 @@ static PyObject *transform3x3(PyObject *transform, int must_be_finite)
     RETURN_FALLBACK;
 }
 
-/* A 3x3 array embedded in the 4x4 identity, as float64. */
+/* A 3x3 array embedded in the 4x4 identity, keeping a floating dtype and float64 otherwise. */
 static PyObject *pad_to_4x4(PyObject *matrix)
 {
-    PyObject *doubles = PyArray_FromArray((PyArrayObject *)matrix, PyArray_DescrFromType(NPY_DOUBLE),
-                                          NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
-    if (doubles == NULL) {
-        return NULL;
-    }
+    int type = PyArray_ISFLOAT((PyArrayObject *)matrix) ? PyArray_TYPE((PyArrayObject *)matrix)
+                                                        : NPY_DOUBLE;
     npy_intp dims[2] = {4, 4};
-    PyObject *padded = PyArray_ZEROS(2, dims, NPY_DOUBLE, 0);
+    PyObject *padded = PyArray_ZEROS(2, dims, type, 0);
     if (padded == NULL) {
-        Py_DECREF(doubles);
         return NULL;
     }
-    const double *source = (const double *)PyArray_DATA((PyArrayObject *)doubles);
-    double *target = (double *)PyArray_DATA((PyArrayObject *)padded);
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            target[4 * i + j] = source[3 * i + j];
-        }
+    PyObject *stop = PyLong_FromLong(3);
+    PyObject *corner = stop == NULL ? NULL : PySlice_New(NULL, stop, NULL);
+    Py_XDECREF(stop);
+    PyObject *key = corner == NULL ? NULL : PyTuple_Pack(2, corner, corner);
+    PyObject *view = key == NULL ? NULL : PyObject_GetItem(padded, key);
+    Py_XDECREF(key);
+    Py_XDECREF(corner);
+    if (view == NULL || PyArray_CopyInto((PyArrayObject *)view, (PyArrayObject *)matrix) < 0) {
+        Py_XDECREF(view);
+        Py_DECREF(padded);
+        return NULL;
     }
-    target[15] = 1.0;
-    Py_DECREF(doubles);
+    Py_DECREF(view);
+    PyObject *one = PyLong_FromLong(1);
+    PyObject *last = Py_BuildValue("(ii)", 3, 3);
+    int failed = one == NULL || last == NULL || PyObject_SetItem(padded, last, one) < 0;
+    Py_XDECREF(one);
+    Py_XDECREF(last);
+    if (failed) {
+        Py_DECREF(padded);
+        return NULL;
+    }
     return padded;
 }
 

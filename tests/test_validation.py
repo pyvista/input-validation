@@ -11,6 +11,7 @@ import types
 from typing import NamedTuple
 from typing import Optional
 from typing import Union
+from typing import get_args
 
 import numpy as np
 import pytest
@@ -53,6 +54,7 @@ from pyvista_validation._cast_array import _cast_to_numpy
 from pyvista_validation._cast_array import _cast_to_tuple
 from pyvista_validation.check import _is_floating
 from pyvista_validation.check import _is_integer
+from pyvista_validation.check import _is_ndim
 from pyvista_validation.check import _is_real
 from pyvista_validation.check import _validate_shape_value
 from pyvista_validation.validate import _array_from_vtkmatrix
@@ -1328,7 +1330,9 @@ def test_lazy_import_returns_the_real_vtk_classes():
 
 
 @pytest.mark.parametrize('package', ['scipy', 'vtkmodules'])
-@pytest.mark.parametrize('module', ['pyvista_validation', 'pyvista_validation._typing'])
+@pytest.mark.parametrize(
+    'module', ['pyvista_validation', 'pyvista_validation._typing', 'pyvista_validation.typing']
+)
 def test_optional_dependencies_not_imported(module, package):
     """Importing the package or its type aliases loads neither SciPy nor VTK."""
     code = f'import sys, {module}; assert {package!r} not in sys.modules'
@@ -1502,20 +1506,15 @@ def test_accelerate_reads_the_environment_value(value, expected):
     assert disabled(value) is expected
 
 
-@pytest.mark.parametrize('scalar_type', [float, int, bool])
-def test_typing_aliases_are_subscriptable(scalar_type):
-    from pyvista_validation import _typing
+@pytest.mark.parametrize('name', ['Array0D', 'Array1D', 'Array2D', 'Array3D'])
+def test_rank_aliases_are_subscriptable(name):
+    """Each rank alias takes a dtype at runtime."""
+    from pyvista_validation import typing
 
-    aliases = (
-        _typing.ArrayLike,
-        _typing.VectorLike,
-        _typing.MatrixLike,
-        _typing._ArrayLikeOrScalar,
-    )
-    for alias in aliases:
-        assert alias[scalar_type] != alias
-    assert _typing.NumberType.__default__ is float
-    assert _typing.NumpyArray[np.float32] != _typing.NumpyArray
+    alias = getattr(typing, name)
+    shape, dtype = get_args(alias[np.float32])
+    assert (0 if shape == tuple[()] else len(get_args(shape))) == int(name[5])
+    assert dtype == np.dtype[np.float32]
 
 
 @pytest.mark.parametrize(
@@ -2054,8 +2053,13 @@ def test_validate_transform4x4_pads_a_3x3_with_the_identity():
 
 
 @pytest.mark.parametrize('dtype', [np.float16, np.float32, np.float64])
-def test_validate_transform4x4_keeps_a_4x4_floating_dtype(dtype):
-    assert validate_transform4x4(np.eye(4, dtype=dtype)).dtype == dtype
+@pytest.mark.parametrize('size', [3, 4])
+def test_validate_transform4x4_keeps_a_floating_dtype(dtype, size):
+    matrix = np.arange(size * size, dtype=dtype).reshape(size, size)
+    result = validate_transform4x4(matrix)
+    assert result.dtype == dtype
+    assert np.array_equal(result[:size, :size], matrix)
+    assert result[3, 3] == (1 if size == 3 else matrix[3, 3])
 
 
 @pytest.mark.parametrize('dtype', [np.int8, np.int32, np.int64, np.uint8])
@@ -2182,6 +2186,14 @@ def test_dtype_predicates(dtype, floating, integer, real):
     assert _is_floating(array) is floating
     assert _is_integer(array) is integer
     assert _is_real(array) is real
+
+
+@pytest.mark.parametrize('shape', [(), (2,), (2, 2), (2, 2, 2)])
+def test_rank_predicate(shape):
+    """The rank predicate accepts exactly the array's number of dimensions."""
+    array = np.zeros(shape)
+    for ndim in range(4):
+        assert _is_ndim(array, ndim) is (ndim == len(shape))
 
 
 def test_check_finite_rejects_a_single_non_finite_element():

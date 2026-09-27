@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING
 from typing import cast
 from typing import overload
@@ -12,6 +13,8 @@ if TYPE_CHECKING:
     import numpy.typing as npt
 
     from pyvista_validation._typing import _AnyArrayLikeOrScalar
+    from pyvista_validation._typing import _AnyDType
+    from pyvista_validation._typing import _AnyNumeric
     from pyvista_validation._typing import _AnyScalar
     from pyvista_validation._typing import _ArrayLikeOrScalar
     from pyvista_validation._typing import _DTypeLike
@@ -23,7 +26,6 @@ if TYPE_CHECKING:
     from pyvista_validation._typing import _NestedInt
     from pyvista_validation._typing import _NestedStr
     from pyvista_validation._typing import _Scalar
-    from pyvista_validation._typing import _ScalarT
     from pyvista_validation._typing import _ToAnyList
     from pyvista_validation._typing import _ToAnyTuple
     from pyvista_validation._typing import _ToList
@@ -36,6 +38,16 @@ if TYPE_CHECKING:
     from pyvista_validation._typing import _ToTupleFloat
     from pyvista_validation._typing import _ToTupleInt
     from pyvista_validation._typing import _ToTupleStr
+
+if sys.version_info >= (3, 13):
+    from typing import TypeVar
+else:
+    from typing_extensions import TypeVar
+
+# For overload signatures that return the same dtype they are given; bare, it is any of them.
+_ScalarT = TypeVar('_ScalarT', bound='_Scalar', default='_Scalar')
+# The same for an input array, whose dtype may be an abstract NumPy family.
+_AnyScalarInT = TypeVar('_AnyScalarInT', bound='_AnyNumeric', default='_Scalar')
 
 
 # Overloads follow NumPy's dtype inference: NumPy inputs keep their dtype, Python bools, ints
@@ -66,7 +78,7 @@ def _cast_to_list(arr: _AnyArrayLikeOrScalar, /) -> _ToAnyList:
 
     Parameters
     ----------
-    arr : float | ArrayLike
+    arr : float | ArrayLikeFloat
         Array to cast.
 
     Returns
@@ -99,7 +111,7 @@ def _cast_to_tuple(arr: _AnyArrayLikeOrScalar, /) -> _ToAnyTuple:
 
     Parameters
     ----------
-    arr : float | ArrayLike
+    arr : float | ArrayLikeFloat
         Array to cast.
 
     Returns
@@ -113,7 +125,7 @@ def _cast_to_tuple(arr: _AnyArrayLikeOrScalar, /) -> _ToAnyTuple:
 
 # fmt: off
 @overload
-def _cast_to_numpy(arr: npt.NDArray[_ScalarT] | _ScalarT, /, *, as_any: bool = ..., dtype: None = None, copy: bool = ..., must_be_real: bool = ...) -> npt.NDArray[_ScalarT]: ...  # type: ignore[overload-overlap]
+def _cast_to_numpy(arr: npt.NDArray[_AnyScalarInT] | _AnyScalarInT, /, *, as_any: bool = ..., dtype: None = None, copy: bool = ..., must_be_real: bool = ...) -> npt.NDArray[_AnyScalarInT]: ...  # type: ignore[overload-overlap]
 @overload
 def _cast_to_numpy(arr: _EmptyList, /, *, as_any: bool = ..., dtype: None = None, copy: bool = ..., must_be_real: bool = ...) -> npt.NDArray[np.float64]: ...  # type: ignore[overload-overlap]
 @overload
@@ -145,7 +157,7 @@ def _cast_to_numpy(
     dtype: _DTypeLike | None = None,
     copy: bool = False,
     must_be_real: bool = False,
-) -> npt.NDArray[_AnyScalar]:
+) -> npt.NDArray[_AnyDType]:
     """Cast array to a NumPy ``ndarray``.
 
     Object arrays are not allowed but the ``dtype`` is otherwise unchecked by default.
@@ -159,7 +171,7 @@ def _cast_to_numpy(
 
     Parameters
     ----------
-    arr : float | ArrayLike
+    arr : float | ArrayLikeFloat
         Array to cast.
 
     as_any : bool, default: True
