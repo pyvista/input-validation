@@ -26,6 +26,7 @@ PATTERNS = [
     ]
 ]
 
+
 def excluded(source: str) -> list[int]:
     """Return the sorted line numbers the project patterns exclude from ``source``."""
     return sorted(exclude_typing_lines.excluded_lines(source, PATTERNS))

@@ -16,7 +16,7 @@ def _code(line: str) -> str:
 
 
 def excluded_lines(source: str, patterns: list[re.Pattern[str]]) -> set[int]:
-    """Return the line numbers the patterns match, extended to whole statements and their blocks."""
+    """Return the lines the patterns match, extended to whole statements and their blocks."""
     lines = source.split('\n')
     excluded: set[int] = set()
     for pattern in patterns:
@@ -25,7 +25,9 @@ def excluded_lines(source: str, patterns: list[re.Pattern[str]]) -> set[int]:
             if not lines[first - 1].strip():
                 first += 1
             last = source.count('\n', 0, match.end()) + 1
-            depth = sum(_code(line).count('(') - _code(line).count(')') for line in lines[first - 1 : last])
+            depth = sum(
+                _code(line).count('(') - _code(line).count(')') for line in lines[first - 1 : last]
+            )
             while depth > 0 and last < len(lines):
                 last += 1
                 depth += _code(lines[last - 1]).count('(') - _code(lines[last - 1]).count(')')
