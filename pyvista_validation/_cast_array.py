@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
     from pyvista_validation._typing import _AnyArrayLikeOrScalar
     from pyvista_validation._typing import _AnyDType
+    from pyvista_validation._typing import _AnyNumeric
     from pyvista_validation._typing import _AnyScalar
     from pyvista_validation._typing import _ArrayLikeOrScalar
     from pyvista_validation._typing import _DTypeLike
@@ -46,9 +47,7 @@ else:
 # For overload signatures that return the same dtype they are given; bare, it is any of them.
 _ScalarT = TypeVar('_ScalarT', bound='_Scalar', default='_Scalar')
 # The same for an input array, whose dtype may be an abstract NumPy family.
-_AnyScalarInT = TypeVar(
-    '_AnyScalarInT', bound='np.floating | np.integer | np.bool_', default='_Scalar'
-)
+_AnyScalarInT = TypeVar('_AnyScalarInT', bound='_AnyNumeric', default='_Scalar')
 
 
 # Overloads follow NumPy's dtype inference: NumPy inputs keep their dtype, Python bools, ints

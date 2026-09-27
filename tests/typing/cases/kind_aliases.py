@@ -8,9 +8,12 @@ import numpy as np
 import numpy.typing as npt
 from type_assert import assert_types
 
-from pyvista_validation import validate_array
 from pyvista_validation import validate_arrayN
 from pyvista_validation import validate_arrayNx3
+from pyvista_validation import validate_transform4x4
+from pyvista_validation._typing import _Array1D
+from pyvista_validation._typing import _Array2D
+from pyvista_validation._typing._array_like import _ArrayAtLeast1D
 from pyvista_validation.typing import ArrayLikeBool
 from pyvista_validation.typing import ArrayLikeFloat
 from pyvista_validation.typing import ArrayLikeInt
@@ -178,10 +181,11 @@ def numpy_accepts(
     np.array_equal(selection, array)
 
 
-# Never called; the validators accept arrays whose dtype is an abstract NumPy family.
-def validators_accept(points: ArrayLikeFloat, floating: npt.NDArray[np.floating]) -> None:
-    """Pass arrays of an abstract dtype to the validators."""
-    if isinstance(points, np.ndarray):
-        validate_arrayNx3(points, reshape=True)
-    validate_array(floating)
-    validate_arrayN(floating)
+# The dtype an ArrayLikeFloat narrows to with isinstance.
+MIXED: _ArrayAtLeast1D[np.floating | np.integer | np.bool_] = np.eye(3)
+MIXED_ROW: _ArrayAtLeast1D[np.floating | np.integer | np.bool_] = np.zeros(3)
+assert_types(
+    validate_arrayNx3(MIXED, reshape=True), _Array2D[np.floating | np.integer | np.bool_]
+)
+assert_types(validate_arrayN(MIXED_ROW), _Array1D[np.floating | np.integer | np.bool_])
+assert_types(validate_transform4x4(MIXED), _Array2D[np.floating])
