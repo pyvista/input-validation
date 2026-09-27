@@ -189,6 +189,8 @@ if TYPE_CHECKING:
 
 # For validate_arrayN_unsigned, whose dtype_out must be an integer type.
 _IntegerT = TypeVar('_IntegerT', bound='_Integer', default='_Integer')
+# For validate_transform4x4, which keeps a floating dtype.
+_FloatingT = TypeVar('_FloatingT', bound='np.floating')
 # For the overloads that keep the input's dtype; a boolean array raises unless must_be_real=False.
 _RealT = TypeVar('_RealT', bound='np.floating | np.integer | np.bool_', default='_Real')
 
@@ -1068,7 +1070,9 @@ def validate_rotation(
 
 # fmt: off
 @overload
-def validate_transform4x4(transform: npt.NDArray[_AnyScalarInT], /, *, must_be_finite: bool = ..., name: str = ...) -> _Array2D[_AnyScalarInT | np.float64]: ...  # type: ignore[overload-overlap]
+def validate_transform4x4(transform: npt.NDArray[_FloatingT], /, *, must_be_finite: bool = ..., name: str = ...) -> _Array2D[_FloatingT]: ...
+@overload
+def validate_transform4x4(transform: npt.NDArray[np.integer], /, *, must_be_finite: bool = ..., name: str = ...) -> _Array2D[np.float64]: ...
 @overload
 def validate_transform4x4(transform: Sequence[Sequence[int]], /, *, must_be_finite: bool = ..., name: str = ...) -> _Array2D[np.float64]: ...
 @overload
@@ -1102,7 +1106,7 @@ def validate_transform4x4(
     Returns
     -------
     np.ndarray
-        Validated 4x4 transformation matrix. A 4x4 floating-point array keeps its
+        Validated 4x4 transformation matrix. A floating-point array keeps its
         dtype; any other input is returned as ``float64``.
 
     See Also
@@ -1144,12 +1148,12 @@ def validate_transform4x4(
             )
             raise TypeError(msg) from None
 
+    if not np.issubdtype(arr.dtype, np.floating):
+        arr = arr.astype(np.float64)
     if arr.shape == (3, 3):
-        arr4 = np.eye(4)
+        arr4 = np.eye(4, dtype=arr.dtype)
         arr4[:3, :3] = arr
         return arr4
-    if not np.issubdtype(arr.dtype, np.floating):
-        return arr.astype(np.float64)
     return arr
 
 

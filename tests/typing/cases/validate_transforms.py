@@ -60,8 +60,9 @@ assert_types(validate_transform3x3(Rotation.identity()), _Array2D[np.float64])
 assert_types(validate_transform3x3(rotation_like()), _Array2D[_Scalar])
 assert_types(
     validate_transform4x4(np.eye(4, dtype=np.float32)),
-    _Array2D[np.float32 | np.float64],
+    _Array2D[np.float32],
 )
+assert_types(validate_transform4x4(np.eye(4, dtype=np.int32)), _Array2D[np.float64])
 assert_types(
     validate_transform4x4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]),
     _Array2D[np.float64],
@@ -77,7 +78,7 @@ assert_types(validate_transform4x4(Rotation.identity()), _Array2D[np.float64])
 assert_types(validate_transform4x4(transform_like()), _Array2D[_Scalar])
 assert_types(
     validate_transform4x4(np.eye(3, dtype=np.float32)),
-    _Array2D[np.float32 | np.float64],
+    _Array2D[np.float32],
 )
 assert_types(
     validate_transform4x4([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
