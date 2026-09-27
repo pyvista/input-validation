@@ -61,7 +61,8 @@ else:
 
 # Arrays of a known rank, for outputs whose rank the validation guarantees.
 # Every scalar type an array can hold, abstract NumPy families included.
-_AnyDType = Union['np.floating[Any]', 'np.integer[Any]', np.bool_, _Text]
+_AnyNumeric = Union['np.floating[Any]', 'np.integer[Any]', np.bool_]
+_AnyDType = Union[_AnyNumeric, _Text]
 _AnyScalarT = TypeVar('_AnyScalarT', bound=_AnyDType, default=_AnyScalar)
 _Array0D = np.ndarray[tuple[()], np.dtype[_AnyScalarT]]
 _Array1D = np.ndarray[tuple[int], np.dtype[_AnyScalarT]]

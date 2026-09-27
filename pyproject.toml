@@ -83,8 +83,8 @@ relative_files = true
 source = ['pyvista_validation']
 
 [tool.coverage.report]
-# Overload stubs are signatures for type checkers; their bodies never run.
-exclude_also = ['^\\s*@overload$']
+# Overload stubs are signatures for type checkers, and TYPE_CHECKING blocks never run.
+exclude_also = ['^\s*@overload.*\n\s*def .*\(.*$', '^\s*if TYPE_CHECKING:']
 
 [tool.mypy]
 enable_error_code = ['ignore-without-code', 'redundant-expr', 'truthy-bool']

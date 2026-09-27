@@ -18,6 +18,7 @@ from ._array_like import _AnyArrayLike as _AnyArrayLike
 from ._array_like import _AnyArrayLikeOrScalar as _AnyArrayLikeOrScalar
 from ._array_like import _AnyDType as _AnyDType
 from ._array_like import _AnyNonArrayLikeOrScalar as _AnyNonArrayLikeOrScalar
+from ._array_like import _AnyNumeric as _AnyNumeric
 from ._array_like import _AnyScalar as _AnyScalar
 from ._array_like import _AnyScalarT as _AnyScalarT
 from ._array_like import _Array0D as _Array0D

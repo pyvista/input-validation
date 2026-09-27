@@ -13,6 +13,8 @@ if TYPE_CHECKING:
     import numpy.typing as npt
 
     from pyvista_validation._typing import _AnyArrayLikeOrScalar
+    from pyvista_validation._typing import _AnyDType
+    from pyvista_validation._typing import _AnyNumeric
     from pyvista_validation._typing import _AnyScalar
     from pyvista_validation._typing import _ArrayLikeOrScalar
     from pyvista_validation._typing import _DTypeLike
@@ -44,6 +46,8 @@ else:
 
 # For overload signatures that return the same dtype they are given; bare, it is any of them.
 _ScalarT = TypeVar('_ScalarT', bound='_Scalar', default='_Scalar')
+# The same for an input array, whose dtype may be an abstract NumPy family.
+_AnyScalarInT = TypeVar('_AnyScalarInT', bound='_AnyNumeric', default='_Scalar')
 
 
 # Overloads follow NumPy's dtype inference: NumPy inputs keep their dtype, Python bools, ints
@@ -121,7 +125,7 @@ def _cast_to_tuple(arr: _AnyArrayLikeOrScalar, /) -> _ToAnyTuple:
 
 # fmt: off
 @overload
-def _cast_to_numpy(arr: npt.NDArray[_ScalarT] | _ScalarT, /, *, as_any: bool = ..., dtype: None = None, copy: bool = ..., must_be_real: bool = ...) -> npt.NDArray[_ScalarT]: ...  # type: ignore[overload-overlap]
+def _cast_to_numpy(arr: npt.NDArray[_AnyScalarInT] | _AnyScalarInT, /, *, as_any: bool = ..., dtype: None = None, copy: bool = ..., must_be_real: bool = ...) -> npt.NDArray[_AnyScalarInT]: ...  # type: ignore[overload-overlap]
 @overload
 def _cast_to_numpy(arr: _EmptyList, /, *, as_any: bool = ..., dtype: None = None, copy: bool = ..., must_be_real: bool = ...) -> npt.NDArray[np.float64]: ...  # type: ignore[overload-overlap]
 @overload
@@ -153,7 +157,7 @@ def _cast_to_numpy(
     dtype: _DTypeLike | None = None,
     copy: bool = False,
     must_be_real: bool = False,
-) -> npt.NDArray[_AnyScalar]:
+) -> npt.NDArray[_AnyDType]:
     """Cast array to a NumPy ``ndarray``.
 
     Object arrays are not allowed but the ``dtype`` is otherwise unchecked by default.

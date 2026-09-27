@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import Any
 
 import numpy as np
 import numpy.typing as npt
 from type_assert import assert_types
 
+from pyvista_validation import validate_arrayN
+from pyvista_validation import validate_arrayNx3
+from pyvista_validation import validate_transform4x4
+from pyvista_validation._typing import _Array1D
+from pyvista_validation._typing import _Array2D
 from pyvista_validation.typing import ArrayLikeBool
 from pyvista_validation.typing import ArrayLikeFloat
 from pyvista_validation.typing import ArrayLikeInt
@@ -17,6 +23,9 @@ from pyvista_validation.typing import MatrixLikeInt
 from pyvista_validation.typing import VectorLikeBool
 from pyvista_validation.typing import VectorLikeFloat
 from pyvista_validation.typing import VectorLikeInt
+
+if TYPE_CHECKING:
+    from pyvista_validation._typing._array_like import _ArrayAtLeast1D
 
 # Declared rather than inferred, so each case reads the array type it names.
 FLOATS: npt.NDArray[np.float32] = np.zeros(3, dtype=np.float32)
@@ -173,3 +182,11 @@ def numpy_accepts(
     np.clip(array, 0, 1)
     np.mean(counts)
     np.array_equal(selection, array)
+
+
+# The dtype an ArrayLikeFloat narrows to with isinstance.
+MIXED: _ArrayAtLeast1D[np.floating | np.integer | np.bool_] = np.eye(3)
+MIXED_ROW: _ArrayAtLeast1D[np.floating | np.integer | np.bool_] = np.zeros(3)
+assert_types(validate_arrayNx3(MIXED, reshape=True), _Array2D[np.floating | np.integer | np.bool_])
+assert_types(validate_arrayN(MIXED_ROW), _Array1D[np.floating | np.integer | np.bool_])
+assert_types(validate_transform4x4(MIXED), _Array2D[np.floating])

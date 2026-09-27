@@ -2053,8 +2053,13 @@ def test_validate_transform4x4_pads_a_3x3_with_the_identity():
 
 
 @pytest.mark.parametrize('dtype', [np.float16, np.float32, np.float64])
-def test_validate_transform4x4_keeps_a_4x4_floating_dtype(dtype):
-    assert validate_transform4x4(np.eye(4, dtype=dtype)).dtype == dtype
+@pytest.mark.parametrize('size', [3, 4])
+def test_validate_transform4x4_keeps_a_floating_dtype(dtype, size):
+    matrix = np.arange(size * size, dtype=dtype).reshape(size, size)
+    result = validate_transform4x4(matrix)
+    assert result.dtype == dtype
+    assert np.array_equal(result[:size, :size], matrix)
+    assert result[3, 3] == (1 if size == 3 else matrix[3, 3])
 
 
 @pytest.mark.parametrize('dtype', [np.int8, np.int32, np.int64, np.uint8])
