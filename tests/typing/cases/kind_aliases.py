@@ -27,6 +27,7 @@ UNKNOWN_MATRIX: npt.NDArray[Any] = np.zeros((2, 3))
 COMPLEX: npt.NDArray[np.complex128] = np.zeros(3, dtype=complex)
 MATRIX: np.ndarray[tuple[int, int], np.dtype[np.float64]] = np.zeros((2, 3))
 VECTOR: np.ndarray[tuple[int], np.dtype[np.float64]] = np.zeros(3)
+SCALAR: np.ndarray[tuple[()], np.dtype[np.float64]] = np.zeros(())
 TENSOR: np.ndarray[tuple[int, int, int], np.dtype[np.float64]] = np.zeros((2, 2, 2))
 
 
@@ -99,6 +100,9 @@ assert_types(matrix_bool([[True], [False]]), MatrixLikeBool)
 
 # An array-like is an array of any rank, or sequences nested up to four deep.
 assert_types(array_float(MATRIX), ArrayLikeFloat)
+assert_types(array_float(TENSOR), ArrayLikeFloat)
+assert_types(array_float(FLOATS), ArrayLikeFloat)
+assert_types(array_float(UNKNOWN), ArrayLikeFloat)
 assert_types(array_float([[[1.0]]]), ArrayLikeFloat)
 assert_types(array_float([[[[1.0]]]]), ArrayLikeFloat)
 assert_types(array_float([FLOATS, FLOATS]), ArrayLikeFloat)
@@ -132,6 +136,7 @@ def rejected() -> None:
     matrix_float(TENSOR)  # type: ignore[arg-type]
     array_float(COMPLEX)  # type: ignore[arg-type]
     array_float(np.float64(1))  # type: ignore[arg-type]
+    array_float(SCALAR)  # type: ignore[arg-type]
     array_float([[[[[1.0]]]]])  # type: ignore[arg-type]
     vector_float([np.float32(1), 2.0])  # type: ignore[arg-type]
     matrix_float([[1.0, 2], [3, True]])  # type: ignore[arg-type]

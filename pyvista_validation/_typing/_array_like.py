@@ -14,9 +14,11 @@ import numpy.typing as npt
 
 if sys.version_info >= (3, 13):
     from typing import TypeVar
+    from typing import Unpack
 else:
     # Type variable defaults (PEP 696) reached the standard library in 3.13.
     from typing_extensions import TypeVar
+    from typing_extensions import Unpack
 
 # Every NumPy scalar type this package produces or preserves.
 _Scalar = (
@@ -65,6 +67,8 @@ _Array0D = np.ndarray[tuple[()], np.dtype[_AnyScalarT]]
 _Array1D = np.ndarray[tuple[int], np.dtype[_AnyScalarT]]
 _Array2D = np.ndarray[tuple[int, int], np.dtype[_AnyScalarT]]
 _Array3D = np.ndarray[tuple[int, int, int], np.dtype[_AnyScalarT]]
+# Arrays of at least one dimension, so a known 0-D array is excluded.
+_ArrayAtLeast1D = np.ndarray[tuple[int, Unpack[tuple[int, ...]]], np.dtype[_AnyScalarT]]
 
 _NestedBool = (
     Sequence[bool]
@@ -164,7 +168,7 @@ _NpNested3 = Sequence[Union[_NpItem[_DTypeT], _NpNested1[_DTypeT], _NpNested2[_D
 _NpNested4 = Sequence[
     Union[_NpItem[_DTypeT], _NpNested1[_DTypeT], _NpNested2[_DTypeT], _NpNested3[_DTypeT]]
 ]
-_ArrayLikeOf = Union[_PyNested4[_PyT], _NpNested4[_DTypeT], npt.NDArray[_DTypeT]]
+_ArrayLikeOf = Union[_PyNested4[_PyT], _NpNested4[_DTypeT], _ArrayAtLeast1D[_DTypeT]]
 
 _FloatDType = Union[np.floating, np.integer, np.bool_]
 _IntDType = Union[np.integer, np.bool_]
