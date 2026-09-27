@@ -94,6 +94,7 @@ warn_unreachable = true
 
 [tool.pytest.ini_options]
 addopts = '--cov=pyvista_validation --cov-fail-under=95'
+filterwarnings = ['error']
 testpaths = 'tests'
 type_assert_cases = 'tests/typing/cases'
 
