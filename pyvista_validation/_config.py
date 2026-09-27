@@ -413,5 +413,5 @@ def _publish(source: Config, /) -> None:
 enforced = Config()
 config = Config()
 _publish(config)
-if _accelerate.disabled(os.environ.get('PYVISTA_VALIDATION_CHECKS')):
+if _accelerate.disabled(os.environ.get('PYVISTA_VALIDATION_CHECKS')):  # pragma: no cover
     config.enabled = False

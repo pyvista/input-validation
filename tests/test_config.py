@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+from unittest import mock
 
 import numpy as np
 import pytest
@@ -145,6 +146,23 @@ def test_setting_a_switch_publishes_it():
         config.sorted = True
     with pytest.raises(ValueError, match='sorted'):
         pvv.check_sorted([3, 1])
+
+
+@pytest.mark.parametrize('name', ('enabled', *_config.CHECKS))
+def test_every_setter_sets_its_switch(name):
+    other = Config()
+    setattr(other, name, False)
+    assert getattr(other, name) is False
+    assert other.to_dict() == {**Config().to_dict(), name: False}
+
+
+@pytest.mark.parametrize('name', sorted(set(_config.CHECKS) - {'axes', 'rotation'}))
+def test_python_implementation_skips_its_check(name):
+    # The public function is the C builtin when the extension is in use
+    function = _accelerate.reference.get(f'check_{name}', getattr(pvv, f'check_{name}'))
+    call = INVALID[name]
+    with config.override(**{name: False}), mock.patch.object(pvv, f'check_{name}', function):
+        call()
 
 
 def test_setter_rejects_a_value_that_is_not_a_bool():
