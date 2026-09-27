@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 from pyvista_validation import validate_arrayN
 from pyvista_validation import validate_arrayN_unsigned
+from pyvista_validation._typing import _AnyDType
 from pyvista_validation._typing import _AnyScalar
 from pyvista_validation._typing import _Array1D
 from pyvista_validation._typing import _Integer
@@ -29,7 +30,7 @@ _ArrayNOut = (
 )
 _ArrayNUnsignedOut = _Array1D[_Integer] | list[int] | tuple[int, ...]
 _ArrayNAnyOut = (
-    _Array1D[_AnyScalar]
+    _Array1D[_AnyDType]
     | list[bool]
     | list[int]
     | list[float]

@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 from pyvista_validation import validate_arrayNx3
+from pyvista_validation._typing import _AnyDType
 from pyvista_validation._typing import _AnyScalar
 from pyvista_validation._typing import _Array2D
 from pyvista_validation._typing import _Scalar
@@ -26,7 +27,7 @@ _ArrayNx3Out = (
     | tuple[tuple[float, float, float], ...]
 )
 _ArrayNx3AnyOut = (
-    _Array2D[_AnyScalar]
+    _Array2D[_AnyDType]
     | list[list[bool]]
     | list[list[int]]
     | list[list[float]]

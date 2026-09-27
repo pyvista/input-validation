@@ -8,6 +8,9 @@ import numpy as np
 import numpy.typing as npt
 from type_assert import assert_types
 
+from pyvista_validation import validate_array
+from pyvista_validation import validate_arrayN
+from pyvista_validation import validate_arrayNx3
 from pyvista_validation.typing import ArrayLikeBool
 from pyvista_validation.typing import ArrayLikeFloat
 from pyvista_validation.typing import ArrayLikeInt
@@ -173,3 +176,12 @@ def numpy_accepts(
     np.clip(array, 0, 1)
     np.mean(counts)
     np.array_equal(selection, array)
+
+
+# Never called; the validators accept arrays whose dtype is an abstract NumPy family.
+def validators_accept(points: ArrayLikeFloat, floating: npt.NDArray[np.floating]) -> None:
+    """Pass arrays of an abstract dtype to the validators."""
+    if isinstance(points, np.ndarray):
+        validate_arrayNx3(points, reshape=True)
+    validate_array(floating)
+    validate_arrayN(floating)
