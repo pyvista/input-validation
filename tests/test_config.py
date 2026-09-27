@@ -148,7 +148,7 @@ def test_setting_a_switch_publishes_it():
         pvv.check_sorted([3, 1])
 
 
-@pytest.mark.parametrize('name', ('enabled', *_config.CHECKS))
+@pytest.mark.parametrize('name', ['enabled', *_config.CHECKS])
 def test_every_setter_sets_its_switch(name):
     other = Config()
     setattr(other, name, False)
